@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake Game</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,100..900;1,100..900&family=Host+Grotesk:ital,wght@0,300..800;1,300..800&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Signika+Negative:wght@300..700&display=swap" rel="stylesheet">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1895586988672311"
+     crossorigin="anonymous"></script>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #7f8b7e;
+            margin: 0;
+            font-family: "Host Grotesk";    
+            overflow: hidden;
+            min-width: 410px;
+            margin-top: 10px;
+         }
+        canvas {
+            background-color: rgb(15, 15, 15);
+            border-radius: 40px;
+            box-shadow: 0px 0px 30px rgba(255, 255, 255, 0.027);
+        }
+        button{
+            margin: 5px;
+            font-size: 18px;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+        select{
+            border: none;
+            padding: 10px 0px 10px 10px;
+            border-radius: 6px;
+        }
+        select option{
+            border: none;
+            padding: 20px 0px 20px 0px;
+        }
+        #scoreBoard, #scoreBoard2 {
+            color: white;
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+        #gameOverScreen {
+            display: none;
+            color: rgb(248, 248, 248);
+            font-size: 24px;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            position: absolute;
+        }
+
+        #gameOverScreen button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #e73131;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .mobile-controls {
+            display: none;
+            margin-top: 10px;
+        }
+
+
+    /* From Uiverse.io  */ 
+     .button {
+       border: none;
+       outline: none;
+       background-color: #353333;
+       width: 130px;
+       height: 50px;
+       font-size: 18px;
+       color: #fff;
+       font-weight: 600;
+       border-radius: 10px;
+       display: flex;
+       justify-content: center;
+       align-items: center;
+       cursor: pointer;
+       position: relative;
+       transition: all 0.3s;
+       margin-top: 40px;
+     }
+     
+     .button::before {
+       content: "";
+       position: absolute;
+       top: 50%;
+       left: 50%;
+       transform: translate(-50%, -50%);
+       background: rgba(255, 255, 255, 0.2);
+       box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+       width: 106%;
+       height: 120%;
+       z-index: -1;
+       border-radius: inherit;
+       transition: all 0.3s;
+     }
+     
+     .gradient-container {
+       position: absolute;
+       top: 50%;
+       left: 50%;
+       transform: translate(-50%, -50%);
+       width: 106%;
+       height: 115%;
+       overflow: hidden;
+       border-radius: inherit;
+       z-index: -2;
+       filter: blur(10px);
+       transition: all 0.3s;
+     }
+     
+     .gradient {
+       position: absolute;
+       top: 50%;
+       left: 50%;
+       transform: translate(-50%, -50%);
+       width: 110%;
+       aspect-ratio: 1;
+       border-radius: 100%;
+       transition: all 0.3s;
+       background-image: linear-gradient(
+         90deg,
+         hsl(226, 81%, 64%),
+         hsl(271, 81%, 64%),
+         hsl(316, 81%, 64%),
+         hsl(1, 81%, 64%),
+         hsl(46, 81%, 64%),
+         hsl(91, 81%, 64%),
+         hsl(136, 81%, 64%),
+         hsl(181, 81%, 64%)
+       );
+       animation: rotate 2s linear infinite;
+       filter: blur(10px);
+     }
+     
+     .label {
+       width: 156px;
+       height: 45px;
+       text-align: center;
+       line-height: 45px;
+       border-radius: 22px;
+       background-color: rgba(43, 43, 43, 1);
+       background-image: linear-gradient(
+         180deg,
+         rgb(43, 43, 43) 0%,
+         rgb(68, 68, 68) 100%
+       );
+     }
+     
+     .button:hover .gradient-container {
+       transform: translate(-50%, -50%) scale(0.98);
+       filter: blur(5px);
+     }
+     
+     .button:hover .gradient {
+       filter: blur(5px);
+     }
+     
+     @keyframes rotate {
+       0% {
+         transform: translate(-50%, -50%) rotate(0deg);
+       }
+       100% {
+         transform: translate(-50%, -50%) rotate(360deg);
+       }
+     }
+     
+     .controls{
+        grid-template-columns: 50px 50px 50px;
+     }
+
+     .space{
+        width: 20px;
+        height: 20px;
+     }
+    </style>
+</head>
+<body>
+    <a class="head" style="color: #1c1c1c00;"><p style=" color: rgba(66, 64, 64, 0.34);  letter-spacing: 5px;">BIBIN PURI</p></a>
+    <div id="scoreBoard2" style="display: none;">Score: eat that red dot !!</div>  
+    <div style="position: relative;">
+      <canvas id="gameCanvas" width="400" height="400"></canvas>
+      <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center;">
+        <h1 id="title" style="color: white; letter-spacing: 1.3px;">Snake Game</h1>
+        <div id="scoreBoard">High Score: 0</div>
+        <select id="levelSelect">
+         <option value="150">Level 1 (human)</option>
+         <option value="100">Level 2 (medium)</option>
+         <option value="50">Level 3 (alien)</option>
+        </select>
+        <button id="startButton" class="button">
+            <span class="label">Start</span>
+            <span class="gradient-container">
+              <span class="gradient"></span>
+            </span>
+        </button>
+        </div>
+    </div>
+    <p class="info" style="margin-bottom: 40px; color: rgba(44, 44, 44, 0.34); font-size: 10px; display: block; text-align: center; ">Recommended to play on pc.</p>
+
+
+    
+    <div id="gameOverScreen">
+        <p>Game Over!</p>
+        <p id="finalScore"></p>
+        <button onclick="restartGame()">Restart</button>
+    </div>
+    
+    <div class="controls" id="mobileControls">
+      <div class="space"></div>
+      <div class="mcontrol" id="up" onclick="direction = 'UP'"><svg xmlns="http://www.w3.org/2000/svg" height="40px" viewBox="0 -960 960 960" width="40px" fill="#000000"><path d="M446.67-80v-673l-200 199.67L200-600l280-280 280 280-46.67 47-200-200v673h-66.66Z"/></svg></div>
+      <div class="space"></div>
+      <div class="mcontrol" id="left"  onclick="direction = 'LEFT'"><svg xmlns="http://www.w3.org/2000/svg" height="40px" viewBox="0 -960 960 960" width="40px" fill="#000000"><path d="M360-200 80-480l280-280 42 42-208 208h686v60H194l208 208-42 42Z"/></svg></div>
+      <div class="space" id="center"></div>
+      <div class="mcontrol" id="right" onclick="direction = 'RIGHT'"><svg xmlns="http://www.w3.org/2000/svg" height="40px" viewBox="0 -960 960 960" width="40px" fill="#000000"><path d="m600-200-42-42 208-208H80v-60h686L558-718l42-42 280 280-280 280Z"/></svg></div>
+      <div class="space"></div>
+      <div class="mcontrol" id="down" onclick="direction = 'DOWN'"><svg xmlns="http://www.w3.org/2000/svg" height="40px" viewBox="0 -960 960 960" width="40px" fill="#000000"><path d="M480-80 200-360l42-42 208 208v-686h60v686l208-208 42 42L480-80Z"/></svg></div>
+      <div class="space"></div>
+    </div>
+
+    <script>
+      // Function to check if the device is Android or iOS
+     function toggleControls() {
+     const controls = document.querySelector('.controls');
+
+     // Detect if the device is Android or iOS
+     const isAndroid = /android/i.test(navigator.userAgent);
+     const isIOS = /iphone|ipod|ipad/i.test(navigator.userAgent);
+
+     // Show controls only on Android or iOS devices
+     if (isAndroid || isIOS) {
+         controls.style.display = 'grid';  // Show controls on Android/iOS
+     } else {
+         controls.style.display = 'none';   // Hide controls on other devices (desktop)
+     }
+       }   
+
+     // Initial check when the page loads
+     toggleControls();
+
+    </script>
+
+    
+    <audio id="beepSound" src="sounds/point.wav" ></audio>
+    <audio id="startSound" src="sounds/bgmusic.mp3" loop></audio>
+    <audio id="gameOverSound" src="sounds/gameover.mp3"></audio>
+    
+     <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        const startButton = document.getElementById("startButton");
+        const levelSelect = document.getElementById("levelSelect");
+        const scoreBoard = document.getElementById("scoreBoard");
+        const beepSound = document.getElementById("beepSound");
+        const startSound = document.getElementById("startSound");
+        const gameOverSound = document.getElementById("gameOverSound");
+        const mobileControls = document.getElementById("mobileControls");
+        const gameOverScreen = document.getElementById("gameOverScreen");
+        const finalScore = document.getElementById("finalScore");
+
+        const box = 20;
+        let snake = [{ x: 10 * box, y: 10 * box }];
+        let direction = "RIGHT";
+        let food = {
+            x: Math.floor(Math.random() * 20) * box,
+            y: Math.floor(Math.random() * 20) * box
+        };
+        let gameInterval;
+        let speed = 100;
+        let score = 0;
+        let highScore = localStorage.getItem("highScore") || 0;
+        scoreBoard.textContent = `High Score: ${highScore}`;
+        
+        document.addEventListener("keydown", (event) => {
+            if (event.key === "ArrowUp" && direction !== "DOWN") direction = "UP";
+            if (event.key === "ArrowDown" && direction !== "UP") direction = "DOWN";
+            if (event.key === "ArrowLeft" && direction !== "RIGHT") direction = "LEFT";
+            if (event.key === "ArrowRight" && direction !== "LEFT") direction = "RIGHT";
+        });
+
+        function draw() {
+            ctx.fillStyle = "black";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = "red";
+            ctx.fillRect(food.x, food.y, box, box);
+            
+            ctx.fillStyle = "lime";
+            snake.forEach((segment) => {
+                ctx.fillRect(segment.x, segment.y, box, box);
+            });
+            
+            let newX = snake[0].x;
+            let newY = snake[0].y;
+            if (direction === "UP") newY -= box;
+            if (direction === "DOWN") newY += box;
+            if (direction === "LEFT") newX -= box;
+            if (direction === "RIGHT") newX += box;
+            
+            if (newX === food.x && newY === food.y) {
+                beepSound.currentTime = 0;
+                beepSound.play();
+                score++;
+                if (score > highScore) {
+                    highScore = score;
+                    localStorage.setItem("highScore", highScore);
+                }
+                scoreBoard2.textContent = `Score: ${score}`;
+                food = {
+                    x: Math.floor(Math.random() * 20) * box,
+                    y: Math.floor(Math.random() * 20) * box
+                };
+            } else {
+                snake.pop();
+            }
+            
+            let newHead = { x: newX, y: newY };
+            if (newX < 0 || newY < 0 || newX >= canvas.width || newY >= canvas.height || snake.some(seg => seg.x === newX && seg.y === newY)) {
+                gameOverSound.play();
+                clearInterval(gameInterval);
+                gameOverScreen.style.display = "block";
+                finalScore.textContent = `Score: ${score} | High Score: ${highScore}`;
+                return;
+            }
+            
+            snake.unshift(newHead);
+        }
+        
+        startButton.addEventListener("click", () => {
+            startSound.play();
+            startButton.style.display = "none";
+            levelSelect.style.display = "none";
+            scoreBoard.style.display = "none";
+            title.style.display = "none";
+
+            
+            scoreBoard2.style.display = "block";
+
+            speed = parseInt(levelSelect.value);
+            gameInterval = setInterval(draw, speed);
+        });
+        
+        function restartGame() {
+            document.location.reload();
+        }
+    </script>
+</body>
+</html>
