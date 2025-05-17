@@ -1,10 +1,9 @@
  * {
       margin: 0px 0px 40px 0px;
-      padding: 0;
+      padding: 0px;
       box-sizing: border-box;
     }
 
- 
 
     html {
       scroll-behavior: smooth;
@@ -21,6 +20,10 @@
       text-align: center;
       background: linear-gradient(to right, #111111, #1c1c1c);
       padding: 20px 0px 20px 0px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex: 1;
     }
 
     header h1 {
@@ -55,6 +58,9 @@
       margin-bottom: 20px;
     }
 
+    #about{
+      font-size: 1.45rem;
+    }
 /* grid */
 .website-grid {
   display: grid;
@@ -107,6 +113,26 @@ svg{
   gap: 60px;
   margin: 0px;
   justify-content: center;
+}
+@media (max-width : 430px) {
+  .linkss{
+    flex-direction: column;
+    gap: 0px;
+    align-items: center;
+    scale: 1.2;
+    padding: 20px 10px 20px 10px ;
+    
+  }
+
+  .email{
+  width: 146px;
+  align-items: center;
+  justify-content: center;
+ }
+}
+
+.contact{
+  box-shadow: 0px 0px 10px rgba(64, 123, 64, 0.338);
 }
 
 /* link of social */
@@ -164,6 +190,8 @@ svg{
 .instagram:hover::before {
   box-shadow: inset 0 0 0 10em rgb(255, 255, 255);
 }
+/* email */
+
 
 /* fb */ 
 .fb {
