@@ -114,7 +114,7 @@ svg{
   margin: 0px;
   justify-content: center;
 }
-@media (max-width : 430px) {
+@media (max-width : 620px) {
   .linkss{
     flex-direction: column;
     gap: 0px;
