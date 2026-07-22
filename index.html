@@ -6,15 +6,15 @@
 <title>Bibin Puri — Portfolio</title>
 <meta name="theme-color" content="#0b0b10" />
 <style>
-  /* ===== Design Tokens (original palette) ===== */
+  /* ===== Design ===== */
   :root{
     --bg:#0b0b10;
     --panel:#11111a;
     --panel-2:#151524;
     --text:#eef1f9;
     --muted:#a2acc4;
-    --brand:#7c3aed;   /* purple */
-    --brand-2:#a78bfa; /* soft purple */
+    --brand:#7c3aed;   
+    --brand-2:#a78bfa; 
     --line:rgba(148,163,184,.18);
     --glow:0 0 0 rgba(124,58,237,.0), 0 0 0 rgba(167,139,250,.0);
     --glow-strong:0 20px 50px rgba(124,58,237,.35), 0 10px 30px rgba(167,139,250,.2);
@@ -28,12 +28,15 @@
   html{scroll-behavior:smooth}
   body{
     margin:0;
+    padding-top: 76px; /* Prevents structural content clipping underneath the fixed header layout */
     font:16px/1.65 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
     color:var(--text);
     background:
       radial-gradient(900px 420px at -10% -10%, rgba(124,58,237,.18), transparent 60%),
       radial-gradient(900px 420px at 110% 0%, rgba(167,139,250,.15), transparent 60%),
+      radial-gradient(1200px 600px at 50% 80%, rgba(124,58,237,.06), transparent 70%),
       var(--bg);
+    background-attachment: fixed;
     overflow-x:hidden;
   }
   a{color:inherit;text-decoration:none}
@@ -41,294 +44,911 @@
   .container{width:min(var(--max),92%);margin:0 auto}
   .row{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
 
-  /* ===== Top Nav (smaller hero + nav glow) ===== */
-  header{
-    position:sticky; top:0; z-index:50;
-    background:rgba(5,5,10,.55);
-    backdrop-filter:saturate(180%) blur(12px);
-    border-bottom:1px solid var(--line);
+  /* ===== Interactive Background Particle Canvas ===== */
+  #bg-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.75;
   }
-  .nav{display:flex;align-items:center;justify-content:space-between;padding:12px 0}
-  .brand{display:flex;gap:.7rem;align-items:center;font-weight:900;letter-spacing:.3px}
+
+  /* ===== Fixed Glassmorphic Navigation Bar ===== */
+  header{
+    position: fixed; 
+    top: 0; 
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: rgba(11, 11, 16, 0.62);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+    transition: background 0.3s, border-color 0.3s;
+  }
+  .nav{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
+  
+  /* Micro-interaction: Branding Typography and Logo Roll */
+  .brand{display:flex;gap:.7rem;align-items:center;font-weight:900;letter-spacing:.3px;cursor:pointer;transition:color 0.25s ease;}
+  .brand span { transition: transform 0.25s ease, color 0.25s ease; display: inline-block; }
+  .brand:hover span { color: var(--brand-2); transform: translateX(2px); }
   .logo{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;color:#fff;font-weight:900;
-        background:linear-gradient(135deg,var(--brand),var(--brand-2)); box-shadow:var(--shadow)}
+        background:linear-gradient(135deg,var(--brand),var(--brand-2)); box-shadow:var(--shadow);
+        transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)}
+  .brand:hover .logo{
+    transform: rotate(360deg) scale(1.08);
+  }
+  
+  /* Micro-interaction: Nav Link Pill Elastic Tracking */
   .nav a{
     color:var(--text); opacity:.86; margin:0 .35rem; padding:.4rem .6rem; border-radius:10px;
-    transition:opacity .2s, box-shadow .25s, background .25s;
+    transition:all .25s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
   }
   .nav a:hover{
-    opacity:1; background:rgba(124,58,237,.08);
-    box-shadow:0 0 18px rgba(124,58,237,.35), inset 0 0 12px rgba(124,58,237,.15);
+    opacity:1; background:rgba(124,58,237,.12);
+    box-shadow:0 0 18px rgba(124,58,237,.25);
+    transform: translateY(-2px);
   }
-  .nav a.active{color:var(--brand-2)}
+  .nav a.active{
+    color:var(--brand-2);
+    background: rgba(167, 139, 250, 0.08);
+    border: 1px solid rgba(167, 139, 250, 0.15);
+  }
 
-  /* ===== Intro / Hero (smaller) ===== */
-  .hero{padding:78px 0 44px}
-  .hero-grid{display:grid;grid-template-columns:1.1fr 0.9fr;gap:26px;align-items:center}
-  .eyebrow{display:inline-block;font-weight:800;letter-spacing:.08em;text-transform:uppercase;font-size:12px;color:var(--muted)}
-  .title{font-size:clamp(36px,5.6vw,62px);line-height:1.04;margin:.35rem 0 .2rem}
-  .title .name{color:#fff} /* requested: Bibin Puri white */
-  .lead{font-size:clamp(18px,2.2vw,22px);color:var(--muted);max-width:58ch;margin:8px 0 10px}
+  /* Ambient Kinetic Floating Framework */
+  @keyframes dynamicFloat {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-8px); }
+    100% { transform: translateY(0px); }
+  }
+  
+  .float-zone-1 { animation: dynamicFloat 6s ease-in-out infinite; }
+  .float-zone-2 { animation: dynamicFloat 7.5s ease-in-out infinite; animation-delay: 1s; }
+  .float-zone-3 { animation: dynamicFloat 9s ease-in-out infinite; animation-delay: 1.8s; }
 
-  /* CTA + mini social row under the lead (icons small, circular) */
+  /*  Intro / Hero */
+  .hero{padding:60px 0 44px}
+  .hero-grid{display:grid;grid-template-columns:1.1fr 0.9fr;gap:32px;align-items:center}
+  
+  /* Micro-interaction: Eyebrow Expansion Tracking */
+  .eyebrow{
+    display:inline-block;font-weight:800;letter-spacing:.08em;text-transform:uppercase;font-size:12px;color:var(--muted);
+    transition: letter-spacing 0.3s ease, color 0.3s ease;
+  }
+  .eyebrow:hover { letter-spacing: .15em; color: var(--brand-2); }
+  
+  /* Micro-interaction: Title Pop & Chromatic Lift */
+  .title{font-size:clamp(36px,5.6vw,62px);line-height:1.04;margin:.35rem 0 .2rem; transition: transform 0.3s ease;}
+  .title .name{color:#fff; transition: color 0.3s ease, text-shadow 0.3s ease;}
+  .title:hover .name { color: var(--brand-2); text-shadow: 0 0 15px rgba(167,139,250,0.3); }
+  
+  /* Micro-interaction: Lead Text Shift */
+  .lead{font-size:clamp(18px,2.2vw,22px);color:var(--muted);max-width:58ch;margin:8px 0 10px; transition: color 0.3s ease;}
+  .lead:hover { color: var(--text); }
+
+  /* Micro-interaction: Action Button Glow Scaling */
   .hero-ctas{display:flex;gap:.8rem;flex-wrap:wrap;margin-top:8px}
   .btn{
     display:inline-flex;align-items:center;gap:.5rem;padding:.78rem 1.05rem;border-radius:14px;background:var(--brand);
-    color:#0b0b10;font-weight:900;border:1px solid rgba(255,255,255,.06);box-shadow:var(--shadow);transition:transform .22s, box-shadow .22s;
+    color:#0b0b10;font-weight:900;border:1px solid rgba(255,255,255,.06);box-shadow:var(--shadow);
+    transition:all .25s cubic-bezier(0.4, 0, 0.2, 1);
   }
-  .btn:hover{transform:translateY(-2px); box-shadow:var(--glow-strong)}
+  .btn:hover{
+    transform:translateY(-4px) scale(1.03); 
+    box-shadow:var(--glow-strong);
+    background: linear-gradient(135deg, var(--brand), var(--brand-2));
+  }
   .btn.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+  .btn.ghost:hover{background:rgba(255,255,255,0.03); border-color:var(--brand-2); color:#fff}
+  
+  /* Micro-interaction: Icon Torque Lift */
   .mini-social{display:flex;gap:.5rem;margin-top:12px}
   .mini-social a{
     width:36px;height:36px;border-radius:999px;display:grid;place-items:center;
     background:var(--panel-2); border:1px solid var(--line); color:var(--text);
-    transition:transform .2s, box-shadow .25s, background .25s;
+    transition:all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   }
-  .mini-social a:hover{transform:translateY(-2px); box-shadow:var(--glow-strong); background:linear-gradient(135deg,var(--brand),var(--brand-2)); color:#0b0b10}
+  .mini-social a:hover{
+    transform:translateY(-4px) scale(1.15) rotate(8deg); 
+    box-shadow:var(--glow-strong); 
+    background:linear-gradient(135deg,var(--brand),var(--brand-2)); 
+    color:#0b0b10;
+  }
+  
 
-  /* Portrait panel (smaller, decorative waves—not cross boxes) */
+/* Portrait Interface Layer */
   .portrait{
-    background:
-      radial-gradient(600px 300px at 20% 10%, rgba(124,58,237,.25), transparent 60%),
-      linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01)),
-      var(--panel);
-    border:1px solid var(--line); border-radius:20px; height:360px; box-shadow:var(--shadow);
+    background: var(--panel);
+    border:1px solid var(--line); border-radius:24px; height:380px; box-shadow:var(--shadow);
     position:relative; overflow:hidden; isolation:isolate;
+    transition: border-color 0.4s, box-shadow 0.4s, transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+  /* Subtle camera movement look on hover */
+  .portrait:hover .portrait-image {
+    filter: brightness(0.75) contrast(1.1) saturate(0.95);
+    opacity: 0.95;
+    transform: scale(1.05) translate(-4px, 4px); /* Creates a smooth floating track */
+  }
+  /* Broughts the canvas to the front and increased wave opacity/brightness */
+  #portrait-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 4; /* Sits completely in front of the picture and UI placeholders */
+    pointer-events: none;
+    mix-blend-mode: screen; /* Brightens the canvas details as they overlay the dark suit */
+  }
+  
+  .portrait-ui-layer {
+    position: absolute;
+    inset: 0;
+    background: 
+      linear-gradient(to right, rgba(148,163,184,0.03) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(148,163,184,0.03) 1px, transparent 1px);
+    background-size: 20px 20px;
+    z-index: 3; /* Grid lines now slide beautifully on top of the image */
+    pointer-events: none;
+  }
+  
+  .portrait-photo-slot {
+    position: absolute;
+    inset: 12px;
+    border-radius: 16px;
+    background: var(--bg); /* Uses core dark background color */
+    border: 1px dashed rgba(148,163,184,0.2);
+    z-index: 1;
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+  }
+  
+  /* FIXED: Blends the image directly into purple/violet portfolio theme */
+  /* Seamless edge-fade and framing alignment */
+  /* Portrait Interface Layer Updates */
+  /*  Portrait Image Styles */
+  .portrait-image {
+    grid-area: 1 / 1;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1;
+    object-position: center 15%; 
+    -webkit-mask-image: radial-gradient(circle, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 95%);
+    mask-image: radial-gradient(circle, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 95%);
+
+    /* THEME BLENDING MATRIX */
+    filter: brightness(0.65) contrast(1.15) saturate(0.8) sepia(0.2);
+    mix-blend-mode: luminosity; 
+    opacity: 0.85;
+    
+    /* COOL ANIMATION SETTINGS */
+    transform: scale(1.02) translate(0, 0);
+    
+    /* FIXED: Combined into one master ultra-smooth transition string */
+    transition: filter 0.6s cubic-bezier(0.25, 1, 0.5, 1), 
+                opacity 0.6s cubic-bezier(0.25, 1, 0.5, 1), 
+                transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+  } 
+  
+  .portrait:hover .portrait-image {
+    filter: brightness(0.75) contrast(1.1) saturate(0.95);
+    opacity: 0.95;
+    transform: scale(1.05) translate(-4px, 4px); 
   }
 
+.portrait-avatar-placeholder {
+    grid-area: 1 / 1;
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(11, 11, 16, 0.85), rgba(124, 58, 237, 0.25));
+    border: 2px solid var(--brand-2); 
+    position: relative;
+    opacity: 0.95;
+    z-index: 5; 
+    box-shadow: 0 0 20px rgba(167, 139, 250, 0.45), inset 0 0 10px rgba(124, 58, 237, 0.3);
+    
+    /* Shifted from 45px down to 65px to sit perfectly on the tie knot */
+    transform: translateY(65px);
+    
+    animation: hudPulse 4s infinite ease-in-out;
+    transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), 
+                box-shadow 0.4s ease, 
+                border-color 0.4s ease;
+  }
 
+  .portrait:hover .portrait-avatar-placeholder {
+    /* Maintains the 65px base offset while smoothly scaling */
+    transform: translateY(65px) scale(1.12);
+    border-color: #fff;
+    box-shadow: 0 0 35px rgba(167, 139, 250, 0.8), inset 0 0 15px rgba(167, 139, 250, 0.5);
+  }
 
+ .portrait-avatar-placeholder::after {
+    content: '';
+    position: absolute;
+    inset: 8px;
+    border-radius: 50%;
+    border: 2px dashed var(--brand);
+    /* ANIMATION: Rotates the inner dash ring like a true targeting computer radar */
+    animation: radarRotate 12s linear infinite;
+  }
 
+  /*  Smooth Custom Keyframes */
+  @keyframes hudPulse {
+    0%, 100% { box-shadow: 0 0 15px rgba(167, 139, 250, 0.4), inset 0 0 10px rgba(124, 58, 237, 0.2); }
+    50% { box-shadow: 0 0 25px rgba(167, 139, 250, 0.6), inset 0 0 15px rgba(124, 58, 237, 0.4); }
+  }
 
-  .wave{position:absolute; inset:auto -40% -30% -40%; height:70%; background:
-        radial-gradient(50% 120% at 50% 0%, rgba(167,139,250,.22), rgba(124,58,237,.08) 60%, transparent 65%);
-        filter:blur(20px); transform:rotate(-2deg);}
-  .ring{position:absolute; inset:auto 20px 18px auto; width:110px;height:110px;border-radius:50%;
-        background:radial-gradient(circle at 30% 30%, rgba(167,139,250,.35), rgba(124,58,237,.05));
-        border:1px solid rgba(255,255,255,.12); filter:blur(0.3px);}
+  @keyframes radarRotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
   .portrait .hint{
-    position:absolute; inset:auto 18px 18px auto; background:rgba(0,0,0,.3); padding:8px 10px; border-radius:12px; font-size:12px; color:#e8e8ff;
-    border:1px solid rgba(255,255,255,.12)
+    position:absolute; bottom: 20px; left: 20px; right: 20px;
+    background:rgba(11,11,16,0.8); backdrop-filter: blur(6px);
+    padding:8px 12px; border-radius:10px; font-size:11px; color:var(--brand-2);
+    border:1px solid var(--line); z-index: 5; font-family: monospace;
+    text-align: center; letter-spacing: 0.5px;
+    transition: background 0.3s, color 0.3s;
+  }
+  .portrait:hover .hint {
+    background: rgba(124, 58, 237, 0.9);
+    color: #fff;
+    border-color: var(--brand-2);
   }
 
-  /* ===== Sections & reveals ===== */
-  section{padding:56px 0}
-  .section-title{font-size:26px;margin:0 0 14px;position:relative}
+  /* Global Spotlight Tracker Overlay Integration */
+  .glow-interactive {
+    position: relative;
+    will-change: transform;
+  }
+  .glow-interactive::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(320px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(167, 139, 250, 0.12), transparent 80%);
+    z-index: 4;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+  .glow-interactive:hover::before {
+    opacity: 1;
+  }
+
+  .portrait-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Keeps aspect ratio clean without flattening face */
+    position: absolute;
+    inset: 0;
+    z-index: 1; /* Pushes photo layers down */
+  }
+
+  /* Adjusting the placeholder so it stays perfectly visible *behind* or *overlapping* gracefully */
+  .portrait-avatar-placeholder {
+    position: relative;
+    z-index: 2; /* Ensures the background decorative ring pops out nicely over or under the canvas layer */
+  }
+
+  /* Sections & Heading Micro-interactions  */
+  section{padding:64px 0}
+  .section-title{font-size:26px;margin:0 0 14px;position:relative; transition: color 0.3s ease;}
   .section-title::after{content:"";position:absolute;left:0;bottom:-6px;width:64px;height:3px;border-radius:6px;
-    background:linear-gradient(90deg,var(--brand),var(--brand-2))}
+    background:linear-gradient(90deg,var(--brand),var(--brand-2)); transition: width 0.4s cubic-bezier(0.25, 1, 0.5, 1);}
+  section:hover .section-title { color: #fff; }
+  section:hover .section-title::after { width: 110px; }
+  
   .reveal{opacity:0; transform:translateY(16px); transition:opacity .8s cubic-bezier(.2,.7,.2,1), transform .8s cubic-bezier(.2,.7,.2,1)}
   .reveal.show{opacity:1; transform:none}
 
-  /* ===== Projects (Vertical cards with hover-reveal overlay) ===== */
-  .projects{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
+  /* Projects Workspace Framework */
+  .projects{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+    gap:20px;
+    perspective: 1200px;
+    align-items: start; /* Ensures cards dynamically fit their content independently */
+  }
   .card-proj{
-    position:relative; background:var(--panel); border:1px solid var(--line); border-radius:16px; overflow:hidden;
-    box-shadow:var(--shadow); height:380px; /* vertical look but not too tall */
-    transition:transform .3s, box-shadow .3s;
+    position:relative;
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:var(--shadow);
+    min-height:390px; /* Changed from fixed height to dynamic minimum height */
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    transform-style: preserve-3d;
+    transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.4s ease, border-color 0.4s ease;
   }
-  .card-proj:hover{transform:translateY(-6px); box-shadow:var(--glow-strong)}
+  .card-proj:hover{
+    transform: translateY(-8px) scale(1.02); /* Multi-interaction physical transformation response on card hover */
+    border-color: rgba(167,139,250,0.5);
+    box-shadow: var(--glow-strong);
+  }
+
+  /* 2.23:1 Flower Garden Card Custom Hover & Video Styling */
+  .card-proj-flower {
+    grid-column: 1 / -1;
+    aspect-ratio: 2.23 / 1;
+    min-height: 320px;
+    animation: none !important; /* Disabled the float animation for this card */
+    
+}
+
+  .card-proj-flower .thumb-video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.95);
+    transition: transform .6s cubic-bezier(0.25, 1, 0.5, 1), filter .4s ease;
+  }
+
+.card-proj-flower .overlay {
+  background: transparent;
+}
+
+  .card-proj-flower:hover .thumb-video {
+    transform: scale(1.03);
+    filter: brightness(0.85);
+  }
+  /* Prevents hover overlay from scrolling too high and blocking the video */
+  .card-proj-flower:hover .overlay {
+    transform: translateY(calc(100% - 150px)) translateZ(25px);
+  }
+
   .thumb{
-    position:absolute; inset:0; background-size:cover; background-position:center; filter:brightness(.95);
-    transition:transform .45s ease, filter .3s ease;
+    position:absolute;
+    inset:0;
+    background-size:cover;
+    background-position:center;
+    filter:brightness(.95);
+    transition:transform .6s cubic-bezier(0.25, 1, 0.5, 1), filter .4s ease;
   }
-  .card-proj:hover .thumb{transform:scale(1.06); filter:brightness(.9)}
+  .card-proj:hover .thumb{
+    transform:scale(1.05) translateZ(-5px);
+    filter:brightness(.6);
+  }
+
+  /* Sliding Deck Overlay Action Tray */
+  .card-action-deck {
+    position: absolute;
+    top: 14px;
+    right: -50px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 10;
+    transition: right 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  .card-proj:hover .card-action-deck {
+    right: 14px;
+  }
+  .card-action-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: rgba(11, 11, 16, 0.82);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--line);
+    color: var(--text);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .card-action-btn:hover {
+    background: linear-gradient(135deg, var(--brand), var(--brand-2));
+    color: #0b0b10;
+    border-color: var(--brand-2);
+    transform: scale(1.12);
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.35);
+  }
+
+  /* Overlay with title strip peek */
   .overlay{
-    position:absolute; inset:auto 0 0 0; height:52%; background:linear-gradient(180deg, rgba(5,5,10,0), rgba(5,5,10,.92) 44%, rgba(5,5,10,.98));
-    color:var(--text); padding:16px; display:flex; flex-direction:column; gap:8px;
-    transform:translateY(60%); transition:transform .45s ease;
+    --peek-height: 74px;
+    position:relative; /* Switched from absolute to relative alignment workflow */
+    margin-top: auto;   /* Pushes the overlay content block cleanly down to the base */
+    width: 100%;
+    background:linear-gradient(180deg, rgba(5,5,10,0), rgba(5,5,10,.96) 12%, rgba(5,5,10,.99));
+    color:var(--text);
+    padding:18px;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    transform:translateY(calc(100% - var(--peek-height)));
+    transition:transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+    z-index: 5;
   }
-  .card-proj:hover .overlay{transform:translateY(0)}
-  .overlay h3{margin:0;font-size:18px;display:flex;justify-content:space-between;gap:12px}
-  .overlay p{margin:0;color:var(--muted);font-size:14px}
-  .tags{display:flex;gap:8px;flex-wrap:wrap}
-  .tag{border:1px solid var(--line);border-radius:999px;padding:4px 8px;font-size:12px;color:var(--muted)}
-  .goto{border:1px solid var(--line);border-radius:10px;padding:4px 8px;font-size:12px}
+  .card-proj:hover .overlay{ 
+    transform:translateY(0) translateZ(25px); 
+  }
+  .overlay h3{
+    margin:0;
+    font-size:18px;
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+    align-items:center;
+    position:relative;
+    z-index:1;
+    height: calc(var(--peek-height) - 36px); /* Keeps header alignment perfectly normalized */
+  }
+  .btn-group {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
 
-  /* ===== Cyber cards (same vertical style + bullet details on hover) ===== */
-  .bullets{margin:0;padding-left:18px;color:var(--muted);font-size:13px;line-height:1.55}
-  .bullets li{margin:6px 0;position:relative;padding-left:12px}
-  .bullets li::before{content:"•";position:absolute;left:0;color:var(--brand)}
+  .overlay > *:not(h3){
+    opacity:0;
+    visibility:hidden;
+    max-height:0;
+    overflow:hidden;
+    transition: opacity .25s ease, max-height .4s ease, visibility 0s linear .4s;
+  }
 
+  .card-proj:hover .overlay > *:not(h3){
+    opacity:1;
+    visibility:visible;
+    max-height:1000px; /* Expanded limit bounds to natively process comprehensive text flows */
+    transition: opacity .3s ease .15s, max-height .45s ease, visibility 0s;
+  }
 
+  .goto{
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:5px 10px;
+    font-size:12px;
+    cursor: pointer;
+    background: transparent;
+    color: var(--text);
+    transition: all 0.25s ease;
+  }
+  .goto:hover{
+    background: var(--brand-2);
+    color: #0b0b10;
+    border-color: var(--brand-2);
+    transform: translateY(-1px);
+  }
+  .goto.btn-preview {
+    background: var(--brand);
+    color: #0b0b10;
+    font-weight: 800;
+    border: none;
+  }
+  .goto.btn-preview:hover {
+    background: var(--brand-2);
+    box-shadow: 0 0 12px rgba(167, 139, 250, 0.4);
+  }
   
+  /* Micro-interaction: Tag Scale Expansion */
+  .tags{display:flex;gap:8px;flex-wrap:wrap}
+  .tag{
+    border:1px solid var(--line);
+    border-radius:999px;
+    padding:4px 8px;
+    font-size:12px;
+    color:var(--muted);
+    transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+  .card-proj:hover .tag {
+    border-color: rgba(167,139,250,0.25);
+    color: var(--text);
+  }
+  .tag:hover {
+    transform: scale(1.08);
+    background: rgba(167,139,250,0.1);
+    border-color: var(--brand-2);
+    color: #fff;
+  }
 
-/* ===== Projects (Vertical cards with hover-reveal overlay) ===== */
-.projects{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-  gap:18px;
+  /* Complex List Implementations */
+  .bullets{
+    margin:6px 0 0;
+    padding-left:16px;
+    color:var(--muted);
+    font-size:13px;
+    line-height:1.6;
+  }
+  .bullets li{
+    margin:5px 0;
+    position:relative;
+    padding-left:12px;
+    transition: color 0.2s ease, transform 0.2s ease;
+  }
+  .bullets li::before{
+    content:"•";
+    position:absolute;
+    left:0;
+    color:var(--brand-2);
+    transition: transform 0.2s ease;
+  }
+  .bullets li:hover { color: var(--text); transform: translateX(3px); }
+  .bullets li:hover::before { transform: scale(1.4); }
+
+  /*  3D Preview Modal Window */
+  .modal-backdrop {
+    position: fixed; inset: 0; z-index: 1000;
+    background: rgba(5,5,10,0.85);
+    backdrop-filter: blur(10px);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.4s ease;
+  }
+  .modal-backdrop.show {
+    opacity: 1; pointer-events: auto;
+  }
+  .modal-window {
+    width: min(960px, 92%); height: 78vh;
+    background: var(--panel);
+    border: 1px solid rgba(124,58,237,0.4);
+    border-radius: 18px;
+    display: flex; flex-direction: column;
+    box-shadow: 0 30px 100px rgba(124,58,237,0.25);
+    overflow: hidden;
+    transform: perspective(1200px) rotateY(-8deg) rotateX(6deg) scale(0.92);
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .modal-backdrop.show .modal-window {
+    transform: perspective(1200px) rotateY(0deg) rotateX(0deg) scale(1);
+  }
+  .modal-header {
+    background: var(--panel-2);
+    border-bottom: 1px solid var(--line);
+    padding: 12px 20px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .modal-dots { display: flex; gap: 7px; }
+  .modal-dots .dot {
+    width: 12px; height: 12px; border-radius: 50%;
+    background: #333;
+    transition: transform 0.2s ease;
+  }
+  .modal-dots .dot:hover { transform: scale(1.2); }
+  .modal-dots .dot.close-btn { background: #ef4444; cursor: pointer; }
+  .modal-dots .dot:nth-child(2) { background: #eab308; }
+  .modal-dots .dot:nth-child(3) { background: #22c55e; }
+  .modal-address {
+    flex: 1; max-width: 460px;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font-size: 12px; color: var(--muted);
+    padding: 6px 14px; text-align: center;
+    margin: 0 16px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    font-family: monospace;
+    transition: border-color 0.25s, color 0.25s;
+  }
+  .modal-address:hover { border-color: var(--brand-2); color: var(--text); }
+  .close-modal-x {
+    background: transparent; border: none; color: var(--muted);
+    font-size: 24px; cursor: pointer; transition: color 0.2s, transform 0.2s; line-height: 1;
+  }
+  .close-modal-x:hover { color: var(--text); transform: scale(1.15); }
+  .modal-body { flex: 1; background: #07070a; position: relative; }
+  .modal-body iframe { width: 100%; height: 100%; border: 0; background: #fff; }
+ 
+ 
+  /* Simulated Terminal inside Modal */
+  .mock-terminal {
+    position: absolute; inset: 0;
+    background: #09090d;
+    font-family: monospace;
+    color: #4ade80;
+    display: flex; flex-direction: column;
+    padding: 24px;
+    overflow-y: auto;
+  }
+  .mock-header {
+    border-bottom: 1px solid rgba(148,163,184,0.15);
+    padding-bottom: 12px;
+    margin-bottom: 16px;
+    font-weight: bold;
+    font-size: 14px;
+    color: var(--brand-2);
+    letter-spacing: 0.5px;
+  }
+  .mock-output {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 13.5px;
+    line-height: 1.5;
+  }
+
+  /* Cyber Terminal FAB & Load Suggestion Toast  */
+  #terminal-trigger {
+    position: fixed; bottom: 24px; right: 24px; z-index: 1100;
+    width: 54px; height: 54px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--brand), var(--brand-2));
+    color: #0b0b10; border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 8px 30px rgba(124,58,237,0.4);
+    transition: transform 0.25s, box-shadow 0.25s;
+  }
+  #terminal-trigger:hover {
+    transform: translateY(-4px) scale(1.06) rotate(15deg);
+    box-shadow: 0 12px 40px rgba(124,58,237,0.6);
+  }
+  
+  #terminal-toast {
+    position: fixed; 
+    bottom: 96px;           
+    right: 24px; 
+    z-index: 1090;
+    width: max-content;    
+    max-width: max-content; 
+    background: rgba(11, 11, 16, 0.95);
+    backdrop-filter: blur(12px) saturate(140%);
+    -webkit-backdrop-filter: blur(12px) saturate(140%);
+    border: 1px solid var(--brand-2);
+    border-radius: 8px;     /* Slightly tighter corners for a smaller look */
+    padding: 6px 12px;      /* Reduced padding to shrink the overall box */
+    box-shadow: var(--shadow);
+    font-family: monospace; 
+    font-size: 11px;       
+    color: var(--text);
+    line-height: 1.3;       /* Restricts line heights from ballooning */
+    
+    display: flex; 
+    align-items: center;    /* Keeps green dot horizontally aligned with text block */
+    gap: 8px;               /* Space between green dot and text content */
+    
+    opacity: 0; 
+    transform: translateY(10px);
+    transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1), transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: none;
+  }
+  #terminal-toast.visible {
+    opacity: 1; transform: translateY(0);
+  }
+
+  /* Wrap the text rows inside a tight flexbox container */
+  .toast-text-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;               /* Minimal gap to bring lines very close together */
+  }
+  
+  /* The Speech Bubble Triangle */
+  #terminal-toast::after {
+    content: '';
+    position: absolute;
+    bottom: -7px;
+    right: 20px;            
+    width: 0;
+    height: 0;
+    border-left: 7px solid transparent;
+    border-right: 7px solid transparent;
+    border-top: 7px solid var(--brand-2);
+    z-index: 1091;
+  }
+  /* Animated downward arrow bouncing indicator */
+/* Layout for the second row to push the arrow to the edge */
+  .toast-arrow-animated {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    gap: 16px; /* Ensures space if the text gets close */
+  }
+
+  /* The bouncing downward arrow icon pushed to the right side */
+  .toast-arrow-animated::after {
+    content: '➔';
+    display: inline-block;
+    transform: rotate(90deg); /* Points it down */
+    animation: toastBounce 1s infinite alternate ease-in-out;
+    color: var(--brand-2);
+    font-weight: bold;
+    margin-right: 10px; /* Slight buffer from the right border */
+  }
+
+  @keyframes toastBounce {
+    from { transform: rotate(90deg) translateX(0px); }
+    to { transform: rotate(90deg) translateX(3px); }
+  }
+
+
+
+  #terminal-toast.visible {
+    opacity: 1; transform: translateY(0);
+  }
+  .toast-indicator {
+    width: 8px; height: 8px; border-radius: 50%; background: #4ade80;
+    box-shadow: 0 0 8px #4ade80; animation: signalPulse 1s infinite alternate;
+  }
+  @keyframes signalPulse { to { opacity: 0.3; transform: scale(0.9); } }
+
+ 
+/* Update this selector block to look like this: */
+#cyber-terminal {
+  position: fixed; bottom: 90px; right: 24px; z-index: 1100;
+  width: min(400px, 88vw); /* Changed from 450px/92vw to prevent clipping */
+  height: 350px;
+  max-height: 60vh;        /* Added to prevent overflowing small phone screens vertically */
+  background: rgba(11,11,16,0.96);
+  backdrop-filter: blur(18px);
+  border: 1px solid var(--brand);
+  border-radius: 14px;
+  box-shadow: 0 25px 60px rgba(0,0,0,0.8), 0 0 20px rgba(124,58,237,0.25);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  opacity: 0; transform: translateY(20px) scale(0.95);
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.card-proj{
-  position:relative;
-  background:var(--panel);
-  border:1px solid var(--line);
-  border-radius:16px;
-  overflow:hidden;
-  box-shadow:var(--shadow);
-  height:380px;
-  transition:transform .3s, box-shadow .3s;
-}
-.card-proj:hover{
-  transform:translateY(-6px);
-  box-shadow:var(--glow-strong);
-}
 
-.thumb{
-  position:absolute;
-  inset:0;
-  background-size:cover;
-  background-position:center;
-  filter:brightness(.95);
-  transition:transform .45s ease, filter .3s ease;
-}
-.card-proj:hover .thumb{
-  transform:scale(1.06);
-  filter:brightness(.9);
-}
+  #cyber-terminal.active {
+    opacity: 1; transform: none; pointer-events: auto;
+  }
+  .terminal-header {
+    background: var(--panel);
+    border-bottom: 1px solid var(--line);
+    padding: 11px 14px;
+    display: flex; align-items: center; justify-content: space-between;
+    font-family: monospace; font-size: 11px; color: var(--muted);
+  }
+  #close-terminal {
+    background: transparent; border: none; color: var(--muted);
+    cursor: pointer; font-size: 15px; transition: transform 0.2s, color 0.2s;
+  }
+  #close-terminal:hover { color: #ef4444; transform: scale(1.2); }
+  .terminal-body {
+    flex: 1; padding: 14px; overflow-y: auto;
+    font-family: monospace; font-size: 12.5px; color: #4ade80;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .terminal-output { display: flex; flex-direction: column; gap: 6px; }
+  .term-green { color: #4ade80; }
+  .term-muted { color: var(--muted); }
+  .term-white { color: #ffffff; }
+  .term-error { color: #f87171; }
+  .terminal-input-line { display: flex; align-items: center; gap: 6px; margin-top: auto; padding-top: 8px; }
+  .terminal-input-line span { color: var(--brand-2); white-space: nowrap; }
+  #terminal-input {
+    flex: 1; background: transparent; border: none; outline: none;
+    color: #4ade80; font-family: inherit; font-size: inherit;
+    padding: 0; margin: 0;
+  }
 
-/* --- Overlay with “peek” title strip --- */
-.overlay{
-  /* tune two first */
-  --overlay-height: 62%;   /* how tall the bottom panel becomes on hover */
-  --peek-height: 70px;     /* the height of the visible title area before hover */
-
-  position:absolute;
-  left:0; right:0; bottom:0;
-  height:var(--overlay-height);
-  background:linear-gradient(180deg, rgba(5,5,10,0), rgba(5,5,10,.92) 44%, rgba(5,5,10,.98));
-  color:var(--text);
-  padding:16px;
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-
-  /* only show the top strip initially */
-  transform:translateY(calc(100% - var(--peek-height)));
-  transition:transform .45s ease;
-}
-.card-proj:hover .overlay{ transform:translateY(0); }
-
-.overlay h3{
-  margin:0;
-  font-size:18px;
-  display:flex;
-  justify-content:space-between;
-  gap:12px;
-  align-items:center;
-  position:relative;
-  z-index:1; /* keep title crisp above fades */
-}
-
-/* Hide EVERYTHING except the title before hover */
-.overlay > *:not(h3){
-  opacity:0;
-  visibility:hidden;
-  max-height:0;      /* collapse layout so nothing peeks */
-  overflow:hidden;   /* hard clip */
-  transition:
-    opacity .25s ease .05s,
-    max-height .45s ease,
-    visibility 0s linear .45s; /* delay visibility -> avoids flicker */
-}
-
-/* Reveal body (desc + bullets) on hover */
-.card-proj:hover .overlay > *:not(h3){
-  opacity:1;
-  visibility:visible;
-  max-height:600px;  /* enough for content */
-  transition:
-    opacity .25s ease .1s,
-    max-height .45s ease,
-    visibility 0s;   /* show immediately */
-}
-
-/* Buttons/tags (optional styling) */
-.goto{
-  border:1px solid var(--line);
-  border-radius:10px;
-  padding:4px 8px;
-  font-size:12px;
-}
-.tags{display:flex;gap:8px;flex-wrap:wrap}
-.tag{
-  border:1px solid var(--line);
-  border-radius:999px;
-  padding:4px 8px;
-  font-size:12px;
-  color:var(--muted);
-}
-
-/* ===== Bullets ===== */
-.bullets{
-  margin:8px 0 0;           /* small gap from title/desc */
-  padding-left:18px;
-  color:var(--muted);
-  font-size:13px;
-  line-height:1.55;
-}
-.bullets li{
-  margin:6px 0;
-  position:relative;
-  padding-left:12px;
-}
-.bullets li::before{
-  content:"•";
-  position:absolute;
-  left:0;
-  color:var(--brand);
-}
-
-
-
-
-
-  /* ===== Skills (category cards with glow) ===== */
+  /* Skills Categories */
   .skills-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
   .skill-card{
-    background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:16px;
-    box-shadow:var(--shadow); transition:transform .25s, box-shadow .25s;
+    background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:18px;
+    box-shadow:var(--shadow); transition:transform .4s cubic-bezier(0.25, 1, 0.5, 1), box-shadow .4s ease, border-color .4s ease;
   }
-  .skill-card:hover{transform:translateY(-4px); box-shadow:var(--glow-strong)}
-  .skill-card h4{margin:0 0 8px;font-size:16px}
+  .skill-card:hover{
+    transform:translateY(-6px) scale(1.02); 
+    border-color: rgba(167, 139, 250, 0.45);
+    box-shadow:var(--glow-strong);
+  }
+  .skill-card h4{margin:0 0 10px;font-size:16px; transition: color 0.3s, transform 0.25s ease;}
+  .skill-card:hover h4 { color: var(--brand-2); transform: translateX(3px); }
   .pillrow{display:flex;flex-wrap:wrap;gap:8px}
-  .pill{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:999px;padding:6px 10px;font-size:13px;color:var(--muted)}
+  .pill{
+    background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:999px;
+    padding:6px 12px;font-size:13px;color:var(--muted);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .skill-card:hover .pill {
+    border-color: rgba(167, 139, 250, 0.2);
+    color: var(--text);
+  }
+  .pill:hover { 
+    background: rgba(124,58,237,0.25); 
+    color: #ffffff !important;
+    border-color: var(--brand-2) !important;
+    transform: translateY(-3px) scale(1.06);
+    box-shadow: 0 4px 12px rgba(167,139,250,0.2);
+  }
 
-  /* ===== Contact ===== */
-  .contact-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:18px}
-  .card{background:var(--panel);border:1px solid var(--line);padding:18px;border-radius:16px;box-shadow:var(--shadow);transition:transform .25s, box-shadow .25s}
-  .card:hover{transform:translateY(-4px); box-shadow:var(--glow-strong)}
+  /* Contact Grid & Master Workspace Cards Layout */
+  .contact-grid {
+    display: grid;
+    /* Automatically switches to a single column if columns drop below 320px wide */
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); 
+    gap: 20px;
+    width: 100%;
+  }
+  .card{
+    background:var(--panel);border:1px solid var(--line);padding:20px;border-radius:16px;
+    box-shadow:var(--shadow); transition:transform .4s cubic-bezier(0.25, 1, 0.5, 1), box-shadow .4s ease, border-color .4s ease;
+  }
+  /* Tactical mouse tracking scaling transformation applied across standard module blocks */
+  .card:hover{
+    transform:translateY(-6px) scale(1.025); 
+    border-color: rgba(167, 139, 250, 0.45);
+    box-shadow:var(--glow-strong);
+  }
+  .card h3 { transition: color 0.3s, transform 0.25s; }
+  .card:hover h3 { color: var(--brand-2); transform: translateX(2px); }
+  
+  /* Micro-interactions for input items */
   input, textarea{
     width:100%;padding:12px;border-radius:12px;margin-bottom:12px;border:1px solid var(--line);
-    background:var(--panel-2); color:var(--text); font:inherit;
+    background:var(--panel-2); color:var(--text); font:inherit; transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.2s ease;
+  }
+  input:hover, textarea:hover {
+    border-color: rgba(167,139,250,0.4);
+    transform: translateY(-1px);
+  }
+  input:focus, textarea:focus { 
+    outline: none; 
+    border-color: var(--brand-2); 
+    box-shadow: 0 0 10px rgba(167, 139, 250, 0.25);
+    background: var(--bg);
+    transform: scale(1.005);
   }
 
-  /* ===== Page progress + page-load entrance ===== */
-  #progress{position:fixed;left:0;top:0;height:3px;width:0;background:linear-gradient(90deg,var(--brand),var(--brand-2));z-index:999}
+  /* Progress Rails */
+  #progress{position:fixed;left:0;top:0;height:3px;width:0;background:linear-gradient(90deg,var(--brand),var(--brand-2));z-index:1010}
   .enter{opacity:0; transform:translateY(10px); animation:enter .8s ease .1s forwards}
   @keyframes enter{to{opacity:1; transform:none}}
 
-  /* ===== Responsive tweaks ===== */
-  @media (max-width: 960px){
-    .hero-grid{grid-template-columns:1fr}
-    .portrait{height:320px}
-    .contact-grid{grid-template-columns:1fr}
+  /* Responsive Adaptations */
+@media (max-width: 960px){
+  body { padding-top: 68px; }
+  .hero-grid{grid-template-columns:1fr}
+  .portrait{height:340px}
+  
+  #terminal-toast { 
+    right: 24px; 
+    bottom: 92px; 
+    transform: translateY(14px); 
   }
+  #terminal-toast.visible { 
+    transform: translateY(0); 
+  }
+  
+  .card-action-deck { right: 14px; }
+  .contact-grid { flex-direction: column; } 
+}
+  
+  /* Micro-interaction: Footer items */
+  footer span { transition: color 0.3s ease; }
+  footer span:hover { color: #fff; }
+
+/* Freeze the Flower Garden card completely flat and still */
+.card-proj-flower,
+.card-proj-flower:hover {
+  animation: none !important;
+  transform: none !important;
+}
+
 </style>
 </head>
 <body>
 
-<!-- Progress bar -->
+<canvas id="bg-canvas"></canvas>
 <div id="progress" aria-hidden="true"></div>
 
 <header class="enter">
   <div class="container nav">
-    <div class="brand">
+    <div class="brand" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
       <div class="logo" aria-hidden="true">B</div>
       <span>Portfolio</span>
     </div>
     <nav class="row" aria-label="Primary">
-      <a href="#home" class="active">Home</a>
+      <a href="javascript:void(0)" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="active">Home</a>
       <a href="#projects">Projects</a>
       <a href="#skills">Skills</a>
       <a href="#contact">Contact</a>
@@ -337,10 +957,10 @@
 </header>
 
 <main>
-  <!-- HERO -->
+  <!-- HERO SECTION -->
   <section id="home" class="hero">
     <div class="container hero-grid">
-      <div class="enter">
+      <div class="enter float-zone-1">
         <span class="eyebrow">Hi, I’m</span>
         <h1 class="title"><span class="name">Bibin Puri</span>.</h1>
         <p class="lead">A Computer Science student focused on responsive web development and practical cybersecurity skills.</p>
@@ -350,47 +970,52 @@
           <a class="btn ghost" href="#contact">Contact</a>
         </div>
 
-        <!-- Small circular social icons UNDER the text -->
         <div class="mini-social" aria-label="Social links">
           <a href="https://github.com/bibinpuri" target="_blank" rel="noopener" aria-label="GitHub">
-  <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-    <path d="M12 .5C5.65.5.5 5.65.5 12a11.5 11.5 0 008 11c.6.1.82-.26.82-.58v-2c-3.27.72-3.96-1.57-3.96-1.57-.55-1.41-1.34-1.78-1.34-1.78-1.1-.75.08-.74.08-.74 1.22.08 1.86 1.26 1.86 1.26 1.08 1.85 2.82 1.32 3.5 1 .1-.79.42-1.32.76-1.63-2.61-.3-5.36-1.3-5.36-5.77 0-1.27.46-2.32 1.22-3.14-.12-.3-.53-1.52.12-3.15 0 0 1-.32 3.3 1.2a11.2 11.2 0 016 0c2.3-1.52 3.3-1.2 3.3-1.2.65 1.63.23 2.85.12 3.15.76.82 1.22 1.87 1.22 3.14 0 4.48-2.76 5.47-5.39 5.76.43.37.81 1.1.81 2.23v3.3c0 .32.22.69.82.58A11.5 11.5 0 0023.5 12C23.5 5.65 18.35.5 12 .5z"/>
-  </svg>
-</a>
-
-         <a href="https://www.instagram.com/_bibinn_b/" target="_blank" rel="noopener" aria-label="Instagram">
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-    <path d="M7 2C4.2 2 2 4.2 2 7v10c0 2.8 2.2 5 5 5h10c2.8 0 5-2.2 5-5V7c0-2.8-2.2-5-5-5H7zm10 2c1.7 0 3 1.3 3 3v10c0 1.7-1.3 3-3 3H7c-1.7 0-3-1.3-3-3V7c0-1.7 1.3-3 3-3h10zm-5 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zm0 2a3.5 3.5 0 110 7 3.5 3.5 0 010-7zm5.25-3.9a1.1 1.1 0 100 2.2 1.1 1.1 0 000-2.2z"/>
-  </svg>
-</a>
-
+            <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 .5C5.65.5.5 5.65.5 12a11.5 11.5 0 008 11c.6.1.82-.26.82-.58v-2c-3.27.72-3.96-1.57-3.96-1.57-.55-1.41-1.34-1.78-1.34-1.78-1.1-.75.08-.74.08-.74 1.22.08 1.86 1.26 1.86 1.26 1.08 1.85 2.82 1.32 3.5 1 .1-.79.42-1.32.76-1.63-2.61-.3-5.36-1.3-5.36-5.77 0-1.27.46-2.32 1.22-3.14-.12-.3-.53-1.52.12-3.15 0 0 1-.32 3.3 1.2a11.2 11.2 0 016 0c2.3-1.52 3.3-1.2 3.3-1.2.65 1.63.23 2.85.12 3.15.76.82 1.22 1.87 1.22 3.14 0 4.48-2.76 5.47-5.39 5.76.43.37.81 1.1.81 2.23v3.3c0 .32.22.69.82.58A11.5 11.5 0 0023.5 12C23.5 5.65 18.35.5 12 .5z"/>
+            </svg>
+          </a>
+          <a href="https://www.instagram.com/_bibinn_b/" target="_blank" rel="noopener" aria-label="Instagram">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M7 2C4.2 2 2 4.2 2 7v10c0 2.8 2.2 5 5 5h10c2.8 0 5-2.2 5-5V7c0-2.8-2.2-5-5-5H7zm10 2c1.7 0 3 1.3 3 3v10c0 1.7-1.3 3-3 3H7c-1.7 0-3-1.3-3-3V7c0-1.7 1.3-3 3-3h10zm-5 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zm0 2a3.5 3.5 0 110 7 3.5 3.5 0 010-7zm5.25-3.9a1.1 1.1 0 100 2.2 1.1 1.1 0 000-2.2z"/>
+            </svg>
+          </a>
           <a href="https://www.facebook.com/bibin.purie/" target="_blank" rel="noopener" aria-label="Facebook">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M22 12.07C22 6.48 17.52 2 11.93 2S2 6.48 2 12.07C2 17.05 5.61 21.2 10.27 22v-7.09H8.08v-2.84h2.19V9.65c0-2.17 1.3-3.36 3.27-3.36.95 0 1.78.07 2.01.1v2.33h-1.38c-1.08 0-1.29.51-1.29 1.26v1.67h2.57l-.42 2.84h-2.15V22C18.39 21.2 22 17.05 22 12.07z"/></svg>
           </a>
         </div>
       </div>
 
-      
-
-<div class="portrait reveal"> <div class="wave"></div> <div class="ring"></div>  </div> </div>
-
-
-  </section>
-
-  <!-- PROJECTS -->
+   <!-- Portrait Component -->
+      <div class="portrait reveal float-zone-2 glow-interactive">
+        <div class="portrait-ui-layer"></div>
+        <div class="portrait-photo-slot">
+          <img src="images/portrait.jpeg" alt="Bibin Puri Portrait" class="portrait-image">
+          <!-- Keeps dotted/rotating background circle effect visible underneath/around -->
+          <div class="portrait-avatar-placeholder"></div>
+        </div>
+        <canvas id="portrait-canvas"></canvas>
+        <div class="hint">Hey there... great to have you here</div>
+      </div>
+      </div>
+      </section>
+  <!-- PROJECTS SECTION -->
   <section id="projects" class="reveal">
     <div class="container">
       <h2 class="section-title">Projects</h2>
 
-      <!-- Web Development: 3 items, vertical cards with hover-reveal -->
-      <h3 style="margin:6px 0 10px">Web Development</h3>
+      <h3 style="margin:6px 0 10px; transition: color 0.3s ease;">Web Development</h3>
       <div class="projects">
-        <!-- Kirana Store -->
-        <article class="card-proj">
-          <a class="thumb" href="https://girikiranastore.netlify.app/desktop.html" target="_blank" rel="noopener"
-             style="background-image:url('images/grocerystore.jpg');"></a>
+        <article class="card-proj float-zone-1 glow-interactive">
+          <div class="thumb" style="background-image:url('images/grocerystore.jpg');"></div>
           <div class="overlay">
-            <h3>Grocery Store Website <a class="goto" href="https://girikiranastore.netlify.app/desktop.html" target="_blank" rel="noopener">Live ↗</a></h3>
+            <h3>Grocery Store Website 
+              <div class="btn-group">
+                <button class="goto btn-preview" data-url="https://girikiranastore.netlify.app/desktop.html">Preview ⚡</button>
+                <a class="goto" href="https://girikiranastore.netlify.app/desktop.html" target="_blank" rel="noopener">Live ↗</a>
+              </div>
+            </h3>
             <p>A modern grocery website with a smooth layout, organized categories, and essential store information.</p>
             <div class="tags">
               <span class="tag">HTML/CSS</span><span class="tag">JavaScript</span><span class="tag">UX</span>
@@ -398,12 +1023,15 @@
           </div>
         </article>
 
-        <!-- Unknown Memes -->
-        <article class="card-proj">
-          <a class="thumb" href="https://unknown-memes.web.app/" target="_blank" rel="noopener"
-             style="background-image:url('images/memewebsite.png');"></a>
+        <article class="card-proj float-zone-2 glow-interactive">
+          <div class="thumb" style="background-image:url('images/memewebsite.png');"></div>
           <div class="overlay">
-            <h3>Unknown Memes <a class="goto" href="https://unknown-memes.web.app/" target="_blank" rel="noopener">Live ↗</a></h3>
+            <h3>Unknown Memes 
+              <div class="btn-group">
+                <button class="goto btn-preview" data-url="https://unknown-memes.web.app/">Preview ⚡</button>
+                <a class="goto" href="https://unknown-memes.web.app/" target="_blank" rel="noopener">Live ↗</a>
+              </div>
+            </h3>
             <p>A responsive web application built to explore, share and engage with trending memes.</p>
             <div class="tags">
               <span class="tag">Firebase</span><span class="tag">HTML</span><span class="tag">CSS</span><span class="tag">JavaScript</span>
@@ -411,56 +1039,79 @@
           </div>
         </article>
 
-        <!-- Snake Game -->
-        <article class="card-proj">
-          <a class="thumb" href="https://bibinpuri.netlify.app/snake%20game/" target="_blank" rel="noopener"
-             style="background-image:url('images/snake.jpg');"></a>
+        <article class="card-proj float-zone-3 glow-interactive">
+          <div class="thumb" style="background-image:url('images/snake.jpg');"></div>
           <div class="overlay">
-            <h3>Snake Game <a class="goto" href="https://bibinpuri.netlify.app/snake%20game/" target="_blank" rel="noopener">Live ↗</a></h3>
+            <h3>Snake Game 
+              <div class="btn-group">
+                <button class="goto btn-preview" data-url="https://bibinpuri.netlify.app/snake%20game/">Preview ⚡</button>
+                <a class="goto" href="https://bibinpuri.netlify.app/snake%20game/" target="_blank" rel="noopener">Live ↗</a>
+              </div>
+            </h3>
             <p>A simple browser-based snake game with smooth movement, responsive design, and easy button controls.</p>
             <div class="tags">
               <span class="tag">HTML</span><span class="tag">CSS</span><span class="tag">JavaScript</span><span class="tag">Responsive</span>
             </div>
           </div>
         </article>
+
+        <!-- Flower Garden Project Card  -->
+        <article class="card-proj card-proj-flower float-zone-1 glow-interactive">
+          <video id="flower-garden-video" class="thumb-video" autoplay loop muted playsinline>
+            <source src="videos/flowergarden.mp4" type="video/mp4">
+          </video>
+          <div class="overlay">
+            <h3>Flower Garden
+              <div class="btn-group">
+                <button class="goto" onclick="toggleVideoMute('flower-garden-video', this)" type="button">🔇 Unmute</button>
+                <button class="goto btn-preview" data-url="https://flowergardenbybibin.netlify.app">Preview ⚡</button>
+                <a class="goto" href="https://flowergardenbybibin.netlify.app" target="_blank" rel="noopener">Live ↗</a>
+              </div>
+            </h3>
+            <p>An interactive virtual flower garden featuring colorful bloom animations, custom visuals, and dynamic animated butterflies.</p>
+            <div class="tags">
+              <span class="tag">HTML/CSS</span><span class="tag">JavaScript</span><span class="tag">Animations</span><span class="tag">Interactive</span>
+            </div>
+          </div>
+        </article>
       </div>
 
-      <!-- Cybersecurity (same vertical pattern + bullets) -->
-      <h3 style="margin:22px 0 10px">Cybersecurity</h3>
+      <h3 style="margin:26px 0 10px; transition: color 0.3s ease;">Cybersecurity</h3>
       <div class="projects">
-        <!-- Web Vulnerability Scanner -->
-        <article class="card-proj">
-          <a class="thumb" href="https://github.com/bibinpuri/web-vuln-scanner" target="_blank" rel="noopener"
-             style="background-image:url('images/webvuln.webp');"></a>
+        <article class="card-proj float-zone-2 glow-interactive">
+          <div class="thumb" style="background-image:url('images/webvuln.webp');"></div>
           <div class="overlay">
             <h3>Web Vulnerability Scanner
-              <a class="goto" href="https://github.com/bibinpuri/web-vuln-scanner" target="_blank" rel="noopener">GitHub ↗</a>
+              <div class="btn-group">
+                <button class="goto btn-preview" data-url="https://github.com/bibinpuri/web-vuln-scanner">Preview ⚡</button>
+                <a class="goto" href="https://github.com/bibinpuri/web-vuln-scanner" target="_blank" rel="noopener">GitHub ↗</a>
+              </div>
             </h3>
             <p>A Python-based scanner that identifies common web vulnerabilities and generates clear, actionable reports.</p>
             <ul class="bullets">
-              <li>Detects XSS, SQLi, directory traversal, open redirects, and missing security headers</li>
-              <li>Integrates OWASP ZAP for automated spidering and deeper vulnerability detection</li>
-        
-              <li>Multi-threaded crawling with adjustable depth and custom payload support</li>
-              <li>Generates detailed HTML reports with severity levels and recommended fixes</li>
+              <li>Detects XSS, SQLi, directory traversal, open redirects, and missing security headers;</li>
+              <li>Integrates OWASP ZAP for automated spidering and deeper vulnerability detection;</li>
+              <li>Multi-threaded crawling with adjustable depth and custom payload support;</li>
+              <li>Generates detailed HTML reports with severity levels and recommended fixes.</li>
             </ul>
           </div>
         </article>
 
-        <!-- Malware Analyzer -->
-        <article class="card-proj">
-          <a class="thumb" href="https://github.com/bibinpuri/malware_analyzer" target="_blank" rel="noopener"
-             style="background-image:url('images/malwareanalyzer.jpg');"></a>
+        <article class="card-proj float-zone-1 glow-interactive">
+          <div class="thumb" style="background-image:url('images/malwareanalyzer.jpg');"></div>
           <div class="overlay">
             <h3>Malware Analyzer
-              <a class="goto" href="https://github.com/bibinpuri/malware_analyzer" target="_blank" rel="noopener">GitHub ↗</a>
+              <div class="btn-group">
+                <button class="goto btn-preview" data-url="https://github.com/bibinpuri/malware_analyzer">Preview ⚡</button>
+                <a class="goto" href="https://github.com/bibinpuri/malware_analyzer" target="_blank" rel="noopener">GitHub ↗</a>
+              </div>
             </h3>
             <p>A Python-based malware analysis tool that detects malicious files using YARA rules, hash matching, and behavior-based heuristic scoring.</p>
             <ul class="bullets">
-              <li>Static malware analysis using YARA rules, hash matching, and heuristic scoring</li>
-              <li>Supports multiple file formats including .exe, .pdf, .doc, .docm, .js, and .txt.</li>
-              <li>Identifies suspicious patterns and malware signatures, with quarantine for unsafe files</li>
-              <li>Produces detailed analysis reports with hashes, detection results, and heuristic scores</li>
+              <li>Static malware analysis using YARA rules, hash matching, and heuristic scoring;</li>
+              <li>Supports multiple file formats including .exe, .pdf, .doc, .docm, .js, and .txt;</li>
+              <li>Identifies suspicious patterns and malware signatures, with quarantine for unsafe files;</li>
+              <li>Produces detailed analysis reports with hashes, detection results, and heuristic scores.</li>
             </ul>
           </div>
         </article>
@@ -468,12 +1119,12 @@
     </div>
   </section>
 
-  <!-- SKILLS (category cards with glow) -->
+  <!-- SKILLS SECTION -->
   <section id="skills" class="reveal">
     <div class="container">
       <h2 class="section-title">Skills</h2>
       <div class="skills-grid">
-        <div class="skill-card">
+        <div class="skill-card float-zone-1 glow-interactive">
           <h4>Programming Languages</h4>
           <div class="pillrow">
             <span class="pill">JavaScript</span>
@@ -485,7 +1136,7 @@
             <span class="pill">C</span>
           </div>
         </div>
-        <div class="skill-card">
+        <div class="skill-card float-zone-2 glow-interactive">
           <h4>Frontend</h4>
           <div class="pillrow">
             <span class="pill">Responsive UI</span>
@@ -495,7 +1146,7 @@
             <span class="pill">Figma</span>
           </div>
         </div>
-        <div class="skill-card">
+        <div class="skill-card float-zone-3 glow-interactive">
           <h4>Security Tools</h4>
           <div class="pillrow">
             <span class="pill">OWASP ZAP</span>
@@ -510,7 +1161,7 @@
             <span class="pill">Hashcat</span>
           </div>
         </div>
-        <div class="skill-card">
+        <div class="skill-card float-zone-1 glow-interactive">
           <h4>Tools & Workflow</h4>
           <div class="pillrow">
             <span class="pill">Git/GitHub</span>
@@ -523,58 +1174,122 @@
     </div>
   </section>
 
-  <!-- CONTACT -->
+  <!-- CONTACT & ACCESSIBILITY SECTION -->
   <section id="contact" class="reveal">
     <div class="container">
-      <h2 class="section-title">Contact</h2>
+      <h2 class="section-title">Contact & Availability</h2>
+      
+      <!-- Synchronized Side-by-Side Dual Column Master Layout Grid -->
       <div class="contact-grid">
-        <div class="card">
+        <div class="card float-zone-1 glow-interactive">
           <form onsubmit="return submitForm(event)">
             <input type="text" name="name" placeholder="Your name" required aria-label="Your name" />
             <input type="email" name="email" placeholder="Your email" required aria-label="Your email" />
             <textarea name="message" placeholder="Tell me about your project…" required aria-label="Message" style="min-height:120px"></textarea>
-            <button class="btn" type="submit">Send message</button>
+            <button class="btn" type="submit" style="cursor:pointer">Send message</button>
             <p id="formStatus" class="muted" role="status" aria-live="polite" style="margin:6px 0 0"></p>
           </form>
         </div>
-        <div class="card">
+        
+        <div class="card float-zone-2 glow-interactive">
           <h3>Availability</h3>
           <p class="muted">Open to internships and entry-level opportunities.</p>
           <h3 style="margin-top:10px">Email</h3>
           <a class="btn ghost" href="mailto:puribibin29295@gmail.com">puribibin29295@gmail.com</a>
-          <h3 style="margin:16px 0 8px">Social</h3>
+          <h3 style="margin:16px 0 8px">Social Profiles</h3>
           <div class="mini-social">
             <a href="https://github.com/bibinpuri" target="_blank" rel="noopener" aria-label="GitHub">
-  <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-    <path d="M12 .5C5.65.5.5 5.65.5 12a11.5 11.5 0 008 11c.6.1.82-.26.82-.58v-2c-3.27.72-3.96-1.57-3.96-1.57-.55-1.41-1.34-1.78-1.34-1.78-1.1-.75.08-.74.08-.74 1.22.08 1.86 1.26 1.86 1.26 1.08 1.85 2.82 1.32 3.5 1 .1-.79.42-1.32.76-1.63-2.61-.3-5.36-1.3-5.36-5.77 0-1.27.46-2.32 1.22-3.14-.12-.3-.53-1.52.12-3.15 0 0 1-.32 3.3 1.2a11.2 11.2 0 016 0c2.3-1.52 3.3-1.2 3.3-1.2.65 1.63.23 2.85.12 3.15.76.82 1.22 1.87 1.22 3.14 0 4.48-2.76 5.47-5.39 5.76.43.37.81 1.1.81 2.23v3.3c0 .32.22.69.82.58A11.5 11.5 0 0023.5 12C23.5 5.65 18.35.5 12 .5z"/>
-  </svg>
-</a>
-
+              <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 .5C5.65.5.5 5.65.5 12a11.5 11.5 0 008 11c.6.1.82-.26.82-.58v-2c-3.27.72-3.96-1.57-3.96-1.57-.55-1.41-1.34-1.78-1.34-1.78-1.1-.75.08-.74.08-.74 1.22.08 1.86 1.26 1.86 1.26 1.08 1.85 2.82 1.32 3.5 1 .1-.79.42-1.32.76-1.63-2.61-.3-5.36-1.3-5.36-5.77 0-1.27.46-2.32 1.22-3.14-.12-.3-.53-1.52.12-3.15 0 0 1-.32 3.3 1.2a11.2 11.2 0 016 0c2.3-1.52 3.3-1.2 3.3-1.2.65 1.63.23 2.85.12 3.15.76.82 1.22 1.87 1.22 3.14 0 4.48-2.76 5.47-5.39 5.76.43.37.81 1.1.81 2.23v3.3c0 .32.22.69.82.58A11.5 11.5 0 0023.5 12C23.5 5.65 18.35.5 12 .5z"/>
+              </svg>
+            </a>
             <a href="https://www.instagram.com/_bibinn_b/" target="_blank" rel="noopener" aria-label="Instagram">
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-    <path d="M7 2C4.2 2 2 4.2 2 7v10c0 2.8 2.2 5 5 5h10c2.8 0 5-2.2 5-5V7c0-2.8-2.2-5-5-5H7zm10 2c1.7 0 3 1.3 3 3v10c0 1.7-1.3 3-3 3H7c-1.7 0-3-1.3-3-3V7c0-1.7 1.3-3 3-3h10zm-5 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zm0 2a3.5 3.5 0 110 7 3.5 3.5 0 010-7zm5.25-3.9a1.1 1.1 0 100 2.2 1.1 1.1 0 000-2.2z"/>
-  </svg>
-</a>
-
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M7 2C4.2 2 2 4.2 2 7v10c0 2.8 2.2 5 5 5h10c2.8 0 5-2.2 5-5V7c0-2.8-2.2-5-5-5H7zm10 2c1.7 0 3 1.3 3 3v10c0 1.7-1.3 3-3 3H7c-1.7 0-3-1.3-3-3V7c0-1.7 1.3-3 3-3h10zm-5 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zm0 2a3.5 3.5 0 110 7 3.5 3.5 0 010-7zm5.25-3.9a1.1 1.1 0 100 2.2 1.1 1.1 0 000-2.2z"/>
+              </svg>
+            </a>
             <a href="https://www.facebook.com/bibin.purie/" target="_blank" rel="noopener" aria-label="Facebook">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M22 12.07C22 6.48 17.52 2 11.93 2S2 6.48 2 12.07C2 17.05 5.61 21.2 10.27 22v-7.09H8.08v-2.84h2.19V9.65c0-2.17 1.3-3.36 3.27-3.36.95 0 1.78.07 2.01.1v2.33h-1.38c-1.08 0-1.29.51-1.29 1.26v1.67h2.57l-.42 2.84h-2.15V22C18.39 21.2 22 17.05 22 12.07z"/></svg>
             </a>
           </div>
         </div>
       </div>
+      
     </div>
   </section>
 </main>
 
+<!-- 3D LIVE PREVIEW MODAL FRAMEWORK -->
+<div id="preview-modal" class="modal-backdrop">
+  <div class="modal-window">
+    <div class="modal-header">
+      <div class="modal-dots">
+        <span class="dot close-btn"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+      </div>
+      <div class="modal-address">https://bibinpuri.github.io</div>
+      <button class="close-modal-x" aria-label="Close modal">×</button>
+    </div>
+    <div class="modal-body">
+      <iframe id="preview-iframe" src="" frameborder="0"></iframe>
+    </div>
+  </div>
+</div>
+
+<!-- SUGGESTION TOAST BANNER -->
+<div id="terminal-toast" role="status" aria-live="polite">
+  <span class="toast-indicator" aria-hidden="true"></span>
+  <div class="toast-text-container">
+    <div>Try launching the interactive</div>
+    <div class="toast-arrow-animated">terminal environment</div>
+  </div>
+</div>
+
+<!-- INTERACTIVE CYBER TERMINAL INTERFACE -->
+<button id="terminal-trigger" aria-label="Open Cyber Terminal">
+  <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+    <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-8 12H4v-2h8v2zm8-4H4V8h16v4z"/>
+  </svg>
+</button>
+
+<div id="cyber-terminal">
+  <div class="terminal-header">
+    <span>bibin-security-terminal.sh</span>
+    <button id="close-terminal" aria-label="Close Terminal Shell">×</button>
+  </div>
+  <div class="terminal-body">
+    <div class="terminal-output">
+      <p class="term-green">Welcome to Bibin's Cyber Terminal v1.5.2</p>
+      <p class="term-muted">Type 'help' to print the environment orchestration menu.</p>
+    </div>
+    <div class="terminal-input-line">
+      <span>guest@bibinpuri:~$</span>
+      <input type="text" id="terminal-input" autocomplete="off" aria-label="Terminal input stream" />
+    </div>
+  </div>
+</div>
+
 <footer>
   <div class="container row" style="justify-content:space-between; padding:28px 0; color:var(--muted)">
     <span>© <span id="year"></span> Bibin Puri</span>
-    <a href="#home" class="btn ghost">Back to top ↑</a>
+    <a href="javascript:void(0)" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="btn ghost">Back to top ↑</a>
   </div>
 </footer>
 
 <script>
-  // Progress on scroll
+  // Video Unmute Toggle Handler
+  function toggleVideoMute(videoId, btn) {
+    const video = document.getElementById(videoId);
+    if (!video) return;
+    video.muted = !video.muted;
+    btn.textContent = video.muted ? '🔇 Unmute' : '🔊 Mute';
+  }
+
+  // Global Session Intervals
+  let currentPreviewInterval = null;
+
+  // Scroll Progress Logic
   const progress = document.getElementById('progress');
   function setProgress(){
     const d = document.documentElement;
@@ -583,18 +1298,18 @@
   }
   addEventListener('scroll', setProgress, {passive:true}); setProgress();
 
-  // Smooth section reveals (on load + scroll)
+  // Smooth Intersection Tracking
   const reveals = document.querySelectorAll('.reveal, .card, .card-proj, .portrait');
   const io = new IntersectionObserver((entries)=>{
     entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('show'); io.unobserve(e.target);} });
-  }, {threshold:.14});
+  }, {threshold:.08});
   reveals.forEach(el=>io.observe(el));
 
-  // Scrollspy + active nav glow
+  // Dynamic Scrollspy Navigation Engine
   const navLinks = document.querySelectorAll('header nav a[href^="#"]');
   const sections = Array.from(document.querySelectorAll('main section'));
   function spy(){
-    const y = window.scrollY + 120;
+    const y = window.scrollY + 160;
     let cur = sections[0]?.id;
     for(const s of sections){ if(y >= s.offsetTop) cur = s.id; }
     navLinks.forEach(a=>{
@@ -605,16 +1320,528 @@
   addEventListener('scroll', spy, {passive:true});
   setTimeout(spy, 300);
 
-  // Fake contact submit
+  // Form Handling
   function submitForm(e){
     e.preventDefault();
-    document.getElementById('formStatus').textContent = "Thanks! I'll get back to you soon.";
+    document.getElementById('formStatus').textContent = "Transmission successful. I'll get back to you soon.";
     e.target.reset();
     return false;
   }
 
-  // Year
+
+function drawWaves() {
+  // Clear canvas loop logic...
+  // NEW BASELINE: Shifts the center origin of the sine waves down by 45 pixels to map the circle
+  const centerY = (canvas.height / 2) + 65; 
+
+}
+
+  // Set Current Calendar Year
   document.getElementById('year').textContent = new Date().getFullYear();
+
+  /*KINETIC INTERACTIVE CANVAS ENGINE
+  */
+  const bgCanvas = document.getElementById('bg-canvas');
+  if (bgCanvas) {
+    const ctx = bgCanvas.getContext('2d');
+    let width = bgCanvas.width = window.innerWidth;
+    let height = bgCanvas.height = window.innerHeight;
+
+    window.addEventListener('resize', () => {
+      width = bgCanvas.width = window.innerWidth;
+      height = bgCanvas.height = window.innerHeight;
+    });
+
+    const particles = [];
+    const count = 55;
+
+    for (let i = 0; i < count; i++) {
+      particles.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: (Math.random() - 0.5) * 0.4,
+        baseVx: (Math.random() - 0.5) * 0.4,
+        baseVy: (Math.random() - 0.5) * 0.4,
+        r: Math.random() * 2.5 + 1,
+        alpha: Math.random() * 0.45 + 0.15
+      });
+    }
+
+    let mouseX = 0, mouseY = 0, activeMouse = false;
+    window.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      activeMouse = true;
+    });
+    window.addEventListener('mouseleave', () => { activeMouse = false; });
+
+    function animateBg() {
+      ctx.clearRect(0, 0, width, height);
+      
+      particles.forEach((p, idx) => {
+        if (activeMouse) {
+          const dx = mouseX - p.x;
+          const dy = mouseY - p.y;
+          const dist = Math.hypot(dx, dy);
+          if (dist < 200) {
+            const force = (200 - dist) / 200;
+            p.vx += (dx / dist) * force * 0.08;
+            p.vy += (dy / dist) * force * 0.08;
+          } else {
+            p.vx += (p.baseVx - p.vx) * 0.05;
+            p.vy += (p.baseVy - p.vy) * 0.05;
+          }
+        } else {
+          p.vx += (p.baseVx - p.vx) * 0.02;
+          p.vy += (p.baseVy - p.vy) * 0.02;
+        }
+
+        p.vx *= 0.96; p.vy *= 0.96;
+        p.x += p.vx; p.y += p.vy;
+
+        if (p.x < 0) p.x = width; else if (p.x > width) p.x = 0;
+        if (p.y < 0) p.y = height; else if (p.y > height) p.y = 0;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(167, 139, 250, ${p.alpha})`;
+        ctx.fill();
+
+        for (let j = idx + 1; j < count; j++) {
+          const p2 = particles[j];
+          const dist = Math.hypot(p.x - p2.x, p.y - p2.y);
+          if (dist < 130) {
+            const alpha = (1 - dist / 130) * 0.14;
+            ctx.strokeStyle = `rgba(124, 58, 237, ${alpha})`;
+            ctx.lineWidth = 0.6;
+            ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
+          }
+        }
+
+        if (activeMouse) {
+          const mDist = Math.hypot(p.x - mouseX, p.y - mouseY);
+          if (mDist < 160) {
+            const mAlpha = (1 - mDist / 160) * 0.22;
+            ctx.strokeStyle = `rgba(167, 139, 250, ${mAlpha})`;
+            ctx.lineWidth = 0.8;
+            ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(mouseX, mouseY); ctx.stroke();
+          }
+        }
+      });
+      requestAnimationFrame(animateBg);
+    }
+    animateBg();
+  }
+
+  /* 
+    MATHEMATICAL OSCILLATOR SYSTEM
+    */
+  const pCanvas = document.getElementById('portrait-canvas');
+  if (pCanvas) {
+    const ctx = pCanvas.getContext('2d');
+    let width = pCanvas.width = pCanvas.offsetWidth;
+    let height = pCanvas.height = pCanvas.offsetHeight;
+
+    window.addEventListener('resize', () => {
+      if (!pCanvas) return;
+      width = pCanvas.width = pCanvas.offsetWidth;
+      height = pCanvas.height = pCanvas.offsetHeight;
+    });
+
+    let phase = 0;
+    function drawWaves() {
+      ctx.clearRect(0, 0, width, height);
+
+      ctx.strokeStyle = 'rgba(148, 163, 184, 0.04)';
+      ctx.lineWidth = 0.5;
+      for (let x = 0; x < width; x += 25) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, height); ctx.stroke();
+      }
+      for (let y = 0; y < height; y += 25) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(width, y); ctx.stroke();
+      }
+
+      const waveParams = [
+        { amp: 24, freq: 0.008, speed: 0.02, color: 'rgba(124,58,237,0.65)' },
+        { amp: 16, freq: 0.015, speed: -0.012, color: 'rgba(167,139,250,0.55)' },
+        { amp: 10, freq: 0.025, speed: 0.022, color: 'rgba(124,58,237,0.4)' }
+      ];
+
+      // Defining center baseline variable
+      const centerY = (height / 2) + 65;
+
+      waveParams.forEach((wave) => {
+        ctx.beginPath();
+        ctx.strokeStyle = wave.color;
+        ctx.lineWidth = 1.25;
+        for (let x = 0; x < width; x++) {
+          // FIXED: Replacing 'height / 2' with 'centerY' so the math shifts down by 65px
+          const y = centerY + Math.sin(x * wave.freq + phase * wave.speed) * wave.amp * Math.sin(phase * 0.004);
+          if (x === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      });
+
+      phase++;
+      requestAnimationFrame(drawWaves);
+    }
+    drawWaves();
+  }
+  /*
+     TACTILE MOUSE SPOTLIGHT & 3D TILT ENGINE*/
+  const interactiveCards = document.querySelectorAll('.glow-interactive, .card');
+
+  interactiveCards.forEach(card => {
+    card.addEventListener('mousemove', (e) => {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      
+      card.style.setProperty('--mouse-x', `${x}px`);
+      card.style.setProperty('--mouse-y', `${y}px`);
+
+      // 3D Space Matrix tilt engine triggers
+      const xc = rect.width / 2;
+      const yc = rect.height / 2;
+      const angleX = (yc - y) / 28;
+      const angleY = (x - xc) / 28;
+      
+      if (card.classList.contains('card-proj')) {
+        card.style.transform = `perspective(1200px) rotateX(${angleX}deg) rotateY(${angleY}deg) translateY(-8px) scale(1.02)`;
+      } else {
+        card.style.transform = `perspective(1200px) rotateX(${angleX}deg) rotateY(${angleY}deg) scale(1.025)`;
+      }
+    });
+
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = 'perspective(1200px) rotateX(0deg) rotateY(0deg) scale(1)';
+    });
+  });
+
+  /* SMOOTH CYBER PREVIEW TERMINAL ENGINE */
+  const modal = document.getElementById('preview-modal');
+  const modalIframe = document.getElementById('preview-iframe');
+  const modalBody = document.querySelector('.modal-body');
+  const modalAddress = document.querySelector('.modal-address');
+
+  document.querySelectorAll('.btn-preview').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const url = btn.getAttribute('data-url');
+      modalAddress.textContent = url;
+      modal.classList.add('show');
+
+      if (currentPreviewInterval) clearInterval(currentPreviewInterval);
+      const existMock = modalBody.querySelector('.mock-terminal');
+      if (existMock) existMock.remove();
+
+      if (url.includes('github.com')) {
+        modalIframe.style.display = 'none';
+        let mockContent = '';
+
+        if (url.includes('web-vuln-scanner')) {
+          mockContent = `
+            <div class="mock-terminal">
+              <div class="mock-header">Web Vulnerability Scanner — Repo Core Control v2.0.4</div>
+              <div class="mock-output" id="vuln-mock-output">
+                <p style="color: #a2acc4">> Initializing multi-threaded spidering cluster engine...</p>
+                <p style="color: #a2acc4">> Checking system parameters and loading target profiles...</p>
+              </div>
+            </div>`;
+        } else {
+          mockContent = `
+            <div class="mock-terminal">
+              <div class="mock-header">Static Malware Analyzer — Signature Pipeline v1.8.9</div>
+              <div class="mock-output" id="malware-mock-output">
+                <p style="color: #a2acc4">> Initializing local YARA hash checking database systems...</p>
+                <p style="color: #a2acc4">> Standby mode online. Awaiting payload ingest stream...</p>
+              </div>
+            </div>`;
+        }
+
+        modalBody.insertAdjacentHTML('beforeend', mockContent);
+
+        if (url.includes('web-vuln-scanner')) {
+          let step = 0;
+          const steps = [
+            { text: ">> Attacking targeted routing interface: target-endpoint.net", type: "muted" },
+            { text: ">> Parsing active port interfaces and mapping exposed assets...", type: "muted" },
+            { text: "[!] ALARM: Cross-Site Scripting (XSS) parameter exploit identified on route: '/search?q='", type: "error" },
+            { text: "[!] ALARM: Reflected SQL Injection susceptibility found on database interface parameter: '/id'", type: "error" },
+            { text: "[✔] SCAN COMPLETED: 2 critical logical architecture anomalies parsed.", type: "green" },
+            { text: ">> Comprehensive diagnostic report logs printed: vulnerabilities_report.html", type: "white" }
+          ];
+          currentPreviewInterval = setInterval(() => {
+            const out = document.getElementById('vuln-mock-output');
+            if (!out || step >= steps.length) { clearInterval(currentPreviewInterval); return; }
+            const p = document.createElement('p');
+            p.textContent = steps[step].text;
+            if (steps[step].type === 'error') p.style.color = '#f87171';
+            else if (steps[step].type === 'green') p.style.color = '#4ade80';
+            else if (steps[step].type === 'white') p.style.color = '#ffffff';
+            else p.style.color = '#a2acc4';
+            out.appendChild(p);
+            out.parentElement.scrollTop = out.parentElement.scrollHeight;
+            step++;
+          }, 600);
+        } else {
+          let step = 0;
+          const steps = [
+            { text: ">> Inspecting structure of file ingestion payload: suspicious_blob.exe", type: "muted" },
+            { text: ">> Generating raw checksum hash signature: d51a8cc98c25b204e9800998ecf8427e", type: "muted" },
+            { text: ">> Running automated local heuristics rule arrays analysis...", type: "muted" },
+            { text: "[WARN] THREAT DETECTED: Trojan_Malicious_Dropper structural rule triggers matched.", type: "error" },
+            { text: ">> Metric calculation final output: Heuristic threat evaluation score: 9.4 / 10", type: "white" },
+            { text: "[✔] AGENT MITIGATION ACTION: TARGET OBJECT HAS BEEN SENT TO THE DEVIATED QUARANTINE JURISDICTION.", type: "green" }
+          ];
+          currentPreviewInterval = setInterval(() => {
+            const out = document.getElementById('malware-mock-output');
+            if (!out || step >= steps.length) { clearInterval(currentPreviewInterval); return; }
+            const p = document.createElement('p');
+            p.textContent = steps[step].text;
+            if (steps[step].type === 'error') p.style.color = '#f87171';
+            else if (steps[step].type === 'green') p.style.color = '#4ade80';
+            else if (steps[step].type === 'white') p.style.color = '#ffffff';
+            else p.style.color = '#a2acc4';
+            out.appendChild(p);
+            out.parentElement.scrollTop = out.parentElement.scrollHeight;
+            step++;
+          }, 600);
+        }
+      } else {
+        modalIframe.style.display = 'block';
+        modalIframe.src = url;
+      }
+    });
+  });
+
+  document.querySelectorAll('.close-modal-x, .close-btn, .modal-backdrop').forEach(el => {
+    el.addEventListener('click', (e) => {
+      if (e.target === modal || e.target.classList.contains('close-modal-x') || e.target.classList.contains('close-btn')) {
+        modal.classList.remove('show');
+        modalIframe.src = '';
+        if (currentPreviewInterval) clearInterval(currentPreviewInterval);
+        const existMock = modalBody.querySelector('.mock-terminal');
+        if (existMock) existMock.remove();
+      }
+    });
+  });
+
+  /*CYBER TERMINAL RUNTIME ENGINE*/
+  const termTrigger = document.getElementById('terminal-trigger');
+  const termToast = document.getElementById('terminal-toast');
+  const termDrawer = document.getElementById('cyber-terminal');
+  const closeTerm = document.getElementById('close-terminal');
+  const termInput = document.getElementById('terminal-input');
+  const termOutput = document.querySelector('.terminal-output');
+  const termBody = document.querySelector('.terminal-body');
+
+  window.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+      if (termToast && !termDrawer.classList.contains('active')) {
+        termToast.classList.add('visible');
+      }
+    }, 1500);
+
+    setTimeout(() => {
+      if (termToast) {
+        termToast.classList.remove('visible');
+      }
+    }, 7000);
+  });
+
+  termTrigger.addEventListener('click', () => {
+    termDrawer.classList.toggle('active');
+    if (termToast) termToast.classList.remove('visible');
+    if (termDrawer.classList.contains('active')) termInput.focus();
+  });
+
+  closeTerm.addEventListener('click', () => { termDrawer.classList.remove('active'); });
+
+  function appendLine(text, className = "") {
+    const p = document.createElement('p');
+    if (className) p.className = className;
+    p.innerHTML = text;
+    termOutput.appendChild(p);
+    termBody.scrollTop = termBody.scrollHeight;
+  }
+
+  const commands = {
+    help: () => `Available System Commands:<br>
+  <span class="term-white">about</span>          - Executive career objective profile;<br>
+  <span class="term-white">projects</span>       - Active design and repository listings;<br>
+  <span class="term-white">open [project]</span> - Redirect to project site/repo (e.g. 'open flower');<br>
+  <span class="term-white">scroll [target]</span>- Scroll page to section or project (e.g. 'scroll contact');<br>
+  <span class="term-white">skills</span>         - Software development tech stack;<br>
+  <span class="term-white">certs</span>          - Cybersecurity focus & certifications;<br>
+  <span class="term-white">whoami</span>         - Print active user identity and privilege level;<br>
+  <span class="term-white">ping</span>           - Test connection latency;<br>
+  <span class="term-white">quote</span>          - Load security/dev philosophy quote;<br>
+  <span class="term-white">contact</span>        - Fetch secure communication nodes;<br>
+  <span class="term-white">status</span>         - Fetch core server metrics;<br>
+  <span class="term-white">scan</span>           - Execute mock system scan;<br>
+  <span class="term-white">trig</span>           - Render geometric oscillator matrices;<br>
+  <span class="term-white">matrix</span>         - Trigger cyber code waterfall simulation;<br>
+  <span class="term-white">clear</span>          - Purge system screen buffers;<br>
+  <span class="term-white">exit</span>           - Terminate active shell session.`,
+
+    about: () => `Bibin Puri — Focused on responsive web interfaces, coordinate geometry engine architectures, and modular security frameworks. Located in Budhanilkantha, Nepal.`,
+
+    whoami: () => `guest@bibinpuri (Permission Level: Visitor / Security Analyst [Read-Only])`,
+
+    ping: () => `PING bibinpuri.github.io (127.0.0.1): 56 data bytes<br>
+64 bytes from 127.0.0.1: icmp_seq=0 ttl=64 time=0.038 ms<br>
+64 bytes from 127.0.0.1: icmp_seq=1 ttl=64 time=0.041 ms<br>
+64 bytes from 127.0.0.1: icmp_seq=2 ttl=64 time=0.035 ms<br>
+--- bibinpuri.github.io ping statistics ---<br>
+3 packets transmitted, 3 received, 0% packet loss, rtt avg = 0.038 ms`,
+
+    certs: () => `CYBERSECURITY FOCUS & AREAS:<br>
+- Web Application Security (OWASP Top 10)<br>
+- Network Vulnerability Assessment & Penetration Testing<br>
+- Static Malware Analysis & Threat Detection`,
+
+    quote: () => {
+      const quotes = [
+        `"I feel, therefore I am."`,
+        `"There are only two types of companies: those that have been hacked, and those that will be." — Robert Mueller`,
+        `"Simplicity is prerequisite for reliability." — Edsger W. Dijkstra`
+      ];
+      return `<span class="term-white">${quotes[Math.floor(Math.random() * quotes.length)]}</span>`;
+    },
+
+    projects: () => `COMPILING CURRENT DEPLOYMENTS...<br>
+[✔] Grocery Store Website ..... [ONLINE] https://girikiranastore.netlify.app/desktop.html<br>
+[✔] Unknown Memes ............. [ONLINE] https://unknown-memes.web.app/<br>
+[✔] Snake Game ................ [ONLINE] https://bibinpuri.netlify.app/snake%20game/<br>
+[✔] Flower Garden ............. [ONLINE] https://flowergardenbybibin.netlify.app<br>
+[✔] Web Vuln Scanner .......... [GITHUB] https://github.com/bibinpuri/web-vuln-scanner<br>
+[✔] Malware Analyzer .......... [GITHUB] https://github.com/bibinpuri/malware_analyzer`,
+
+    skills: () => `COMPILED TECHNOLOGICAL ASSETS:<br>
+- Core Languages: JavaScript, Python, HTML/CSS, PHP, SQL, C<br>
+- Cyber Security Frameworks: OWASP ZAP, Burp Suite, Nmap, Wireshark, Metasploit, Nessus, SQLmap, Hashcat`,
+
+    contact: () => `SECURE COMMUNICATION NODES:<br>
+  - Email: <a href="mailto:puribibin29295@gmail.com" class="term-green" style="text-decoration:underline">puribibin29295@gmail.com</a><br>
+  - GitHub: <a href="https://github.com/bibinpuri" target="_blank" class="term-muted">github.com/bibinpuri</a><br>
+  - Instagram: <a href="https://www.instagram.com/_bibinn_b/" target="_blank" class="term-muted">@_bibinn_b</a>`,
+
+    status: () => `SYSTEM HEALTH METRICS:<br>
+- Environment: Production / Stable<br>
+- Location Node: Budhanilkantha, Nepal<br>
+- Engine Latency: 0.04ms<br>
+- Core Status: Operational // 0 Errors Detected`,
+
+    trig: () => `COORDINATE GEOMETRY ENGINE VECTORS:<br>
+Matrix: [[cos(θ), -sin(θ)], [sin(θ), cos(θ)]]<br>
+Oscillator State: Operational. Phase vector shifting active.`,
+
+    matrix: () => `Simulating Digital Rain... Layer loaded successfully.`,
+
+    clear: () => { termOutput.innerHTML = ''; return ''; },
+
+    exit: () => {
+      setTimeout(() => { termDrawer.classList.remove('active'); }, 400);
+      return "Terminating active shell deployment buffer sequence... Goodbye.";
+    }
+  };
+
+  termInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      const input = termInput.value.trim();
+      termInput.value = '';
+      if (!input) return;
+
+      appendLine(`<span class="term-white">guest@bibinpuri:~$</span> ${input}`);
+
+      const parts = input.split(' ');
+      const cmd = parts[0].toLowerCase();
+      const args = parts.slice(1).join(' ').toLowerCase().trim();
+
+      // OPEN PROJECT COMMAND
+      if (cmd === 'open') {
+        const projectLinks = {
+          'grocery': 'https://girikiranastore.netlify.app/desktop.html',
+          'grocery store': 'https://girikiranastore.netlify.app/desktop.html',
+          'memes': 'https://unknown-memes.web.app/',
+          'unknown memes': 'https://unknown-memes.web.app/',
+          'snake': 'https://bibinpuri.netlify.app/snake%20game/',
+          'snake game': 'https://bibinpuri.netlify.app/snake%20game/',
+          'flower': 'https://flowergardenbybibin.netlify.app',
+          'flower garden': 'https://flowergardenbybibin.netlify.app',
+          'scanner': 'https://github.com/bibinpuri/web-vuln-scanner',
+          'web vuln scanner': 'https://github.com/bibinpuri/web-vuln-scanner',
+          'malware': 'https://github.com/bibinpuri/malware_analyzer',
+          'malware analyzer': 'https://github.com/bibinpuri/malware_analyzer'
+        };
+
+        if (projectLinks[args]) {
+          window.open(projectLinks[args], '_blank');
+          appendLine(`[✔] Redirecting to target location: ${projectLinks[args]}`, "term-green");
+        } else {
+          appendLine(`[!] Project not found: '${args}'. Available options: flower, grocery, memes, snake, scanner, malware`, "term-error");
+        }
+      }
+      // SCROLL / GOTO COMMAND
+      else if (cmd === 'scroll' || cmd === 'goto') {
+        let targetEl = null;
+
+        if (['home', 'projects', 'skills', 'contact'].includes(args)) {
+          targetEl = document.getElementById(args);
+        } else if (args.includes('flower')) {
+          targetEl = document.querySelector('.card-proj-flower');
+        } else if (args.includes('grocery')) {
+          targetEl = document.querySelectorAll('.card-proj')[0];
+        } else if (args.includes('meme')) {
+          targetEl = document.querySelectorAll('.card-proj')[1];
+        } else if (args.includes('snake')) {
+          targetEl = document.querySelectorAll('.card-proj')[2];
+        } else if (args.includes('scanner') || args.includes('vuln')) {
+          targetEl = document.querySelectorAll('.card-proj')[4];
+        } else if (args.includes('malware')) {
+          targetEl = document.querySelectorAll('.card-proj')[5];
+        }
+
+        if (targetEl) {
+          targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          appendLine(`[✔] Scrolling viewport to target node: '${args}'`, "term-green");
+        } else {
+          appendLine(`[!] Scroll target not found: '${args}'. Try: home, projects, skills, contact, flower, grocery, memes, snake, scanner, malware`, "term-error");
+        }
+      }
+      // SCAN COMMAND
+      else if (cmd === 'scan') {
+        let count = 0;
+        const targetPorts = [22, 80, 443, 3306, 8080];
+        appendLine("Spawning Nmap target mapping engine modules...", "term-muted");
+
+        const scanInterval = setInterval(() => {
+          if (count >= targetPorts.length) {
+            appendLine("[✔] Diagnostic interface network scan accomplished safely.", "term-green");
+            clearInterval(scanInterval);
+            return;
+          }
+          const p = targetPorts[count];
+          let status = (p === 80 || p === 443 || p === 8080) ? "OPEN (HTTP/SSL Interface Service Active)" : "FILTERED (Protected Firewall Layer Active)";
+          appendLine(`Port ${p}/tcp -> ${status}`, "term-white");
+          count++;
+        }, 400);
+      } 
+      // REGISTERED DICTIONARY COMMANDS
+      else if (commands[cmd]) {
+        const res = commands[cmd]();
+        if (res) appendLine(res);
+      } 
+      // UNKNOWN COMMAND
+      else {
+        appendLine(`bash: command not found: ${input}. Type 'help' for available options.`, "term-error");
+      }
+    }
+  });
 </script>
 </body>
 </html>
