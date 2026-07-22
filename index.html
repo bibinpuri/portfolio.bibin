@@ -6,7 +6,7 @@
 <title>Bibin Puri — Portfolio</title>
 <meta name="theme-color" content="#0b0b10" />
 <style>
-  /* ===== Design ===== */
+  /*  Design */
   :root{
     --bg:#0b0b10;
     --panel:#11111a;
@@ -44,7 +44,7 @@
   .container{width:min(var(--max),92%);margin:0 auto}
   .row{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
 
-  /* ===== Interactive Background Particle Canvas ===== */
+  /*  Interactive Background Particle Canvas */
   #bg-canvas {
     position: fixed;
     top: 0;
@@ -56,7 +56,7 @@
     opacity: 0.75;
   }
 
-  /* ===== Fixed Glassmorphic Navigation Bar ===== */
+  /*  Fixed Glassmorphic Navigation Bar  */
   header{
     position: fixed; 
     top: 0; 
@@ -372,11 +372,54 @@
     transform-style: preserve-3d;
     transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.4s ease, border-color 0.4s ease;
   }
-  .card-proj:hover{
-    transform: translateY(-8px) scale(1.02); /* Multi-interaction physical transformation response on card hover */
-    border-color: rgba(167,139,250,0.5);
+  
+
+/*  Desktop Mouse Hover Only */
+/*  Desktop Only Hover (Mouse / Fine Pointer) */
+@media (hover: hover) and (pointer: fine) {
+  .card-proj:hover {
+    transform: translateY(-8px) scale(1.02);
+    border-color: rgba(167, 139, 250, 0.5);
     box-shadow: var(--glow-strong);
   }
+
+  .card-proj:hover .card-action-deck { right: 14px; }
+  .card-proj:hover .thumb { transform: scale(1.05) translateZ(-5px); filter: brightness(.6); }
+  .card-proj:hover .overlay { transform: translateY(0) translateZ(25px); }
+  .card-proj-flower:hover .thumb-video { transform: scale(1.03); filter: brightness(0.85); }
+  .card-proj-flower:hover .overlay { transform: translateY(calc(100% - 150px)) translateZ(25px); }
+  .card-proj:hover .overlay > *:not(h3) {
+    opacity: 1;
+    visibility: visible;
+    max-height: 1000px;
+    transition: opacity .3s ease .15s, max-height .45s ease, visibility 0s;
+  }
+}
+
+/* Mobile Tap State (Only opens when tapping card background) */
+.card-proj.active-mobile .overlay { transform: translateY(0) !important; }
+.card-proj-flower.active-mobile .overlay { transform: translateY(calc(100% - 150px)) !important; }
+.card-proj.active-mobile .overlay > *:not(h3) {
+  opacity: 1 !important;
+  visibility: visible !important;
+  max-height: 1000px !important;
+  transition: opacity .3s ease .15s, max-height .45s ease, visibility 0s !important;
+}
+/* Mobile Tap Toggle State  */
+.card-proj.active-mobile .overlay {
+  transform: translateY(0) !important;
+}
+
+.card-proj-flower.active-mobile .overlay {
+  transform: translateY(calc(100% - 150px)) !important;
+}
+
+.card-proj.active-mobile .overlay > *:not(h3) {
+  opacity: 1 !important;
+  visibility: visible !important;
+  max-height: 1000px !important;
+  transition: opacity .3s ease .15s, max-height .45s ease, visibility 0s !important;
+}
 
   /* 2.23:1 Flower Garden Card Custom Hover & Video Styling */
   .card-proj-flower {
@@ -934,6 +977,40 @@
   transform: none !important;
 }
 
+/* Lock overlay in normal resting form ONLY when the card is NOT active */
+.card-proj.closed-by-unmute:not(.active-mobile) .overlay,
+.card-proj-flower.closed-by-unmute:not(.active-mobile) .overlay {
+  transform: translateY(calc(100% - var(--peek-height))) !important;
+  transition: transform 0.35s ease-out !important;
+}
+
+/* Hide description text and tool tags ONLY when the card is closed */
+.card-proj.closed-by-unmute:not(.active-mobile) .overlay > *:not(h3),
+.card-proj-flower.closed-by-unmute:not(.active-mobile) .overlay > *:not(h3) {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  max-height: 0 !important;
+  transition: opacity 0.2s ease !important;
+}
+
+/* Turn off glowing spotlight and video zoom when closed by unmute */
+.card-proj.closed-by-unmute:not(.active-mobile)::before {
+  opacity: 0 !important;
+}
+
+.card-proj-flower.closed-by-unmute:not(.active-mobile) .thumb-video {
+  transform: none !important;
+  filter: brightness(0.95) !important;
+}
+
+/* Force full detail visibility (tools, description, buttons) whenever card is active */
+.card-proj.active-mobile .overlay > *,
+.card-proj-flower.active-mobile .overlay > * {
+  opacity: 1 !important;
+  visibility: visible !important;
+  max-height: 1000px !important;
+}
+
 </style>
 </head>
 <body>
@@ -1063,7 +1140,7 @@
           <div class="overlay">
             <h3>Flower Garden
               <div class="btn-group">
-                <button class="goto" onclick="toggleVideoMute('flower-garden-video', this)" type="button">🔇 Unmute</button>
+                <button class="goto" onclick="toggleVideoMute('flower-garden-video', this, event)" type="button">🔇 Unmute</button>
                 <button class="goto btn-preview" data-url="https://flowergardenbybibin.netlify.app">Preview ⚡</button>
                 <a class="goto" href="https://flowergardenbybibin.netlify.app" target="_blank" rel="noopener">Live ↗</a>
               </div>
@@ -1278,13 +1355,29 @@
 </footer>
 
 <script>
-  // Video Unmute Toggle Handler
-  function toggleVideoMute(videoId, btn) {
-    const video = document.getElementById(videoId);
-    if (!video) return;
+  
+
+// Video Unmute / Mute Handler
+function toggleVideoMute(videoId, btn, event) {
+  if (event) event.stopPropagation(); // Stop the click from opening the card
+
+  // 1. Toggle Audio State
+  const video = document.getElementById(videoId);
+  if (video) {
     video.muted = !video.muted;
     btn.textContent = video.muted ? '🔇 Unmute' : '🔊 Mute';
   }
+
+  // 2. Lock the card to prevent mobile hover states from triggering distractions
+  const card = btn.closest('.card-proj');
+  if (card) {
+    card.classList.remove('active-mobile');
+    card.classList.add('closed-by-unmute'); // Locks down the sticky mobile :hover
+  }
+
+  btn.blur();
+}
+
 
   // Global Session Intervals
   let currentPreviewInterval = null;
@@ -1335,6 +1428,41 @@ function drawWaves() {
   const centerY = (canvas.height / 2) + 65; 
 
 }
+
+
+
+// Mobile Card Touch Handling
+document.querySelectorAll('.card-proj').forEach(card => {
+  card.addEventListener('click', (e) => {
+    // Ignore clicks on buttons/links
+    if (e.target.closest('button, a, input')) return;
+
+    const wasClosedByUnmute = card.classList.contains('closed-by-unmute');
+    const isActive = card.classList.contains('active-mobile');
+
+    // Close all other cards first
+    document.querySelectorAll('.card-proj').forEach(c => {
+      c.classList.remove('active-mobile');
+      c.classList.remove('closed-by-unmute');
+    });
+
+    // If card was pulled down or inactive, tap opens it up
+    if (!isActive || wasClosedByUnmute) {
+      card.classList.add('active-mobile');
+    }
+  });
+});
+
+// Tap outside anywhere to close open cards
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.card-proj')) {
+    document.querySelectorAll('.card-proj').forEach(c => {
+      c.classList.remove('active-mobile');
+      c.classList.remove('closed-by-unmute');
+    });
+  }
+});
+
 
   // Set Current Calendar Year
   document.getElementById('year').textContent = new Date().getFullYear();
@@ -1842,6 +1970,22 @@ Oscillator State: Operational. Phase vector shifting active.`,
       }
     }
   });
+
+
+// Ensure card click/tap toggles full details instantly on 1st tap
+document.querySelectorAll('.card-proj, .card-proj-flower').forEach(card => {
+  card.addEventListener('click', function (e) {
+    // Ignore clicks on buttons or links inside the card
+    if (e.target.closest('button') || e.target.closest('a')) return;
+
+    // Immediately remove the unmute lock so all tools/details render
+    this.classList.remove('closed-by-unmute');
+
+    // Toggle full active card view
+    this.classList.toggle('active-mobile');
+  });
+});
+
 </script>
 </body>
 </html>
